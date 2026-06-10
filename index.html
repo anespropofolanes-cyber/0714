@@ -192,6 +192,10 @@ h1{cursor:pointer;user-select:none}
 .suitbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .suitbtn{border:1px solid var(--line);background:var(--bg);color:var(--ink2);border-radius:16px;padding:4px 12px;font-size:.82em;cursor:pointer;font-family:inherit}
 .suitbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.combo{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.cbox{flex:1;min-width:225px;border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center;background:var(--bg)}
+.cbox .nm{font-weight:700;letter-spacing:.1em;margin:8px 0 4px}
+.cbox .cw{width:108px;margin:0 auto;border-radius:8px;overflow:hidden}
 @media(max-width:480px){
   .wrap{padding:0 10px 70px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))}
@@ -411,26 +415,46 @@ h1{cursor:pointer;user-select:none}
 <div id="taroRoot">
 <nav>
   <button data-tp="draw" class="on">抽牌</button>
+  <button data-tp="combo">合璧</button>
   <button data-tp="deck">牌庫</button>
   <button data-tp="trecs">紀錄</button>
   <button data-tp="tlearn">學習</button>
 </nav>
 
 <section class="page on" id="tp-draw">
+  <div class="card" id="tDailyCard"></div>
   <div class="card">
     <h2>所問之事</h2>
     <textarea id="tQuestion" rows="3" placeholder="靜心三息，一問一事。
 牌不決定命運，卻能照見方向。
 先觀自己，再觀星辰。"></textarea>
     <div class="modes">
-      <div class="mode on" data-sp="1">單張指引</div>
-      <div class="mode" data-sp="3">三張・過去現在未來</div>
+      <div class="mode on" data-sp="one">單張指引</div>
+      <div class="mode" data-sp="time">時序三張</div>
+      <div class="mode" data-sp="tri">聖三角</div>
+      <div class="mode" data-sp="ab">二擇一</div>
+      <div class="mode" data-sp="celtic">凱爾特</div>
     </div>
+    <p style="color:var(--ink2);font-size:.85em;text-align:center" id="spDesc">抽一張牌，作為當下的指引</p>
     <button class="big" id="shuffleBtn">洗 牌 抽 牌</button>
     <div class="spread" id="spreadArea"></div>
     <p class="tossinfo" id="tInfo"></p>
   </div>
   <div id="tResult"></div>
+</section>
+
+<section class="page" id="tp-combo">
+  <div class="card">
+    <h2>中西合璧</h2>
+    <p class="modern" style="margin-bottom:10px">同一個問題，東方起一卦、西方抽一牌。易經告訴你「時勢與位置」，塔羅照見「心象與原型」——兩面鏡子對照，盲點無所遁形。</p>
+    <textarea id="cQuestion" rows="2" placeholder="寫下想問的一件事"></textarea>
+    <button class="big" id="comboBtn">起 卦・抽 牌</button>
+  </div>
+  <div id="cResult"></div>
+  <div class="card">
+    <h2>合璧紀錄</h2>
+    <div id="cRecList"></div>
+  </div>
 </section>
 
 <section class="page" id="tp-deck">
@@ -483,6 +507,59 @@ h1{cursor:pointer;user-select:none}
       <tr><td>核心精神</td><td>卦示其理，人行其道</td><td>牌照見方向，路由人走</td></tr></table>
       同一個問題可先起一卦、再抽一牌：易經給「時勢與位置」，塔羅給「心象與原型」，兩面鏡子對照，盲點無所遁形。
     </div></details>
+    <details><summary>愚者之旅：大阿爾克那的成長敘事</summary><div>
+      22張大牌是一趟完整的英雄旅程——編號0的愚者，走過21個驛站，最終抵達世界。讀懂這條線，大牌就不再是孤立的符號。<br><br>
+      <b>第一幕・外在世界（1－7）</b>：學習在人間立足。<br>
+      0 愚者——背起行囊，從懸崖躍入人生。<br>
+      1 魔術師——學會運用手上的資源。<br>
+      2 女祭司——發現直覺與內在的聲音。<br>
+      3 皇后——體驗愛、感官與豐盛。<br>
+      4 皇帝——學習秩序、規則與界線。<br>
+      5 教皇——接受傳統與師長的教導。<br>
+      6 戀人——做出第一個屬於自己的重大選擇。<br>
+      7 戰車——憑意志離家出征，贏得第一場勝利。<br><br>
+      <b>第二幕・內在之旅（8－14）</b>：戰勝外界之後，轉身面對自己。<br>
+      8 力量——馴服內心的獅子，柔比剛強。<br>
+      9 隱士——提燈上山，向內尋光。<br>
+      10 命運之輪——看見比個人更大的循環。<br>
+      11 正義——為自己的選擇承擔因果。<br>
+      12 倒吊人——學會懸置、犧牲與換位。<br>
+      13 死神——經歷真正的結束與蛻變。<br>
+      14 節制——將對立調和成第三種可能。<br><br>
+      <b>第三幕・超越之旅（15－21）</b>：穿過最深的黑暗，抵達圓滿。<br>
+      15 惡魔——直視自己的陰影與欲望。<br>
+      16 高塔——假我崩塌，謊言燒盡。<br>
+      17 星星——廢墟上重燃希望。<br>
+      18 月亮——穿越最深的迷霧與恐懼。<br>
+      19 太陽——找回赤子般純粹的自己。<br>
+      20 審判——聽見召喚，寬恕而重生。<br>
+      21 世界——整合一切，舞步落定——然後，愚者再次出發。<br><br>
+      抽到大牌時，想想自己正走在旅程的哪一站：是該出發、該內省，還是該穿越黑暗？
+    </div></details>
+    <details><summary>牌與牌的組合讀法</summary><div>
+      多張牌同時出現時，牌與牌之間的關係往往比單張牌義更重要。四個觀察角度：<br><br>
+      <b>一、元素互動</b>——火（權杖）遇風（寶劍）助燃：思考加速行動；水（聖杯）遇土（錢幣）相生：感情落地生根；火遇水相剋：熱情與情感拉扯，留意內在矛盾；風遇土相滯：想法多落實慢，需要耐心。<br><br>
+      <b>二、數字共振</b>——同數字出現兩張以上，該課題被強調：一是開始，二是平衡與抉擇，三是初步成果，四是穩定，五是動盪，六是和諧，七是評估，八是行動，九是接近完成，十是循環終點。<br><br>
+      <b>三、大牌密度</b>——大牌越多，事情越具「命運感」，非個人能完全掌控；小牌為主則是日常可努力的範圍；宮廷牌多，表示關鍵在「人」。<br><br>
+      <b>四、正逆比例</b>——逆位過半，課題多在內心：先整理自己，再處理事情。<br><br>
+      <b>精選組合十六式</b><br>
+      戀人＋惡魔——危險的吸引力，甜蜜中藏著綑綁。<br>
+      高塔＋星星——破而後立，崩塌正是轉機。<br>
+      死神＋審判——深度蛻變的雙重確認，舊我必須退場。<br>
+      倒吊人＋死神——放下執著，才能真正重生。<br>
+      月亮＋寶劍七——迷霧加隱瞞，求證再行動。<br>
+      女祭司＋月亮——直覺極強的時刻，留意夢境訊息。<br>
+      太陽＋聖杯十——圓滿幸福的最強組合。<br>
+      聖杯二＋聖杯十——從相遇到成家的完整弧線。<br>
+      魔術師＋錢幣一——新事業的黃金起點。<br>
+      皇帝＋正義——制度、合約、法律事務有利。<br>
+      戰車＋權杖六——乘勝追擊，凱旋在望。<br>
+      命運之輪＋權杖八——變化加速，把握窗口。<br>
+      隱士＋寶劍四——必須徹底休息與沉澱。<br>
+      惡魔＋錢幣四——被物質與安全感綁架。<br>
+      寶劍三＋星星——心碎之後，療癒已在路上。<br>
+      愚者＋世界——結束即開始，一段旅程的大圓滿。
+    </div></details>
     <details><summary>抽牌的心態</summary><div>
       與易經占卜相同：心誠則明，一問一事；不問他人隱私，不重複追問同一件事；牌義永遠服務於你的思考，而非代替你決定。抽到「壞牌」不必驚慌——死神是蛻變，高塔是除舊，寶劍十是谷底回升。每張牌都有禮物。
     </div></details>
@@ -499,6 +576,7 @@ h1{cursor:pointer;user-select:none}
 <script src="cards.js"></script>
 <script src="learn.js"></script>
 <script src="tarot.js"></script>
+<script src="tarot-ext.js"></script>
 <script>
 const TRI={"乾":[1,1,1],"兌":[1,1,0],"離":[1,0,1],"震":[1,0,0],"巽":[0,1,1],"坎":[0,1,0],"艮":[0,0,1],"坤":[0,0,0]};
 const TRINAT={"乾":"天","兌":"澤","離":"火","震":"雷","巽":"風","坎":"水","艮":"山","坤":"地"};
@@ -942,46 +1020,146 @@ document.querySelectorAll("#taroRoot nav button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#taroRoot nav button").forEach(x=>x.classList.toggle("on",x===b));
   document.querySelectorAll("#taroRoot .page").forEach(p=>p.classList.toggle("on",p.id==="tp-"+b.dataset.tp));
   if(b.dataset.tp==="trecs")renderTRecs();
+  if(b.dataset.tp==="combo")renderCRecs();
 });
 
+/* ---- 中西合璧 ---- */
+let lastCombo=null;
+function comboBoxes(r,card){
+  const marks=marksOf(r),hasChg=r.chgIdx.length>0,rule=ruleText(r),t=window.TAROT[card.id];
+  return `<div class="combo">
+  <div class="cbox">${svgHex(r.baseArr,marks,96)}
+    <div class="nm">本卦・${r.base.full}${hasChg?`<span style="color:var(--ink2);font-size:.8em">　→　${r.changed.name}</span>`:""}</div>
+    <div class="kwline">${r.base.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+    <p class="modern" style="text-align:left">${r.base.read}</p>
+    <p class="modern" style="text-align:left;font-size:.85em">${rule.txt}</p>
+    <button class="ghost" onclick="openHexDetail(${r.base.id})">詳閱卦象</button></div>
+  <div class="cbox"><div class="cw">${cardFrontSVG(t,card.rev)}</div>
+    <div class="nm">${t.name}<span class="rv" style="color:var(--accent2);font-size:.8em">　${card.rev?"逆位":"正位"}</span></div>
+    <div class="kwline">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+    <p class="modern" style="text-align:left">${card.rev?t.rev:t.up}</p>
+    <p class="tg" style="color:var(--accent2)">${t.g}</p>
+    <button class="ghost" onclick="openTCard(${t.id})">詳閱此牌</button></div>
+  </div>`;
+}
+$("#comboBtn").onclick=()=>{
+  const vals=[0,1,2,3,4,5].map(()=>tossCoins().value);
+  const r=analyse(vals);
+  const card={id:Math.floor(Math.random()*78),rev:Math.random()<0.5};
+  lastCombo={q:$("#cQuestion").value.trim(),date:new Date().toISOString(),vals,card,note:""};
+  $("#cResult").innerHTML=`<div class="card"><h2>卦象 × 牌面</h2>
+  ${lastCombo.q?`<p class="modern">所問：${lastCombo.q}</p>`:""}
+  ${comboBoxes(r,card)}
+  <h3>合璧筆記</h3>
+  <textarea id="cNote" rows="3" placeholder="卦講時勢，牌講心象——對照之後，你看見了什麼？"></textarea>
+  <button class="ghost" id="cSaveBtn" style="margin-top:8px">儲存合璧紀錄</button></div>`;
+  $("#cSaveBtn").onclick=()=>{
+    lastCombo.note=$("#cNote").value.trim();
+    const recs=getCRecs();recs.unshift(lastCombo);
+    localStorage.setItem("yj_combo_recs",JSON.stringify(recs.slice(0,200)));
+    $("#cSaveBtn").textContent="已儲存";$("#cSaveBtn").disabled=true;
+    renderCRecs();
+  };
+  $("#cResult").scrollIntoView({behavior:"smooth"});
+};
+function getCRecs(){try{return JSON.parse(localStorage.getItem("yj_combo_recs")||"[]")}catch(e){return[]}}
+function renderCRecs(){
+  const recs=getCRecs(),box=$("#cRecList");if(!box)return;
+  if(!recs.length){box.innerHTML='<div class="empty">尚無合璧紀錄</div>';return;}
+  box.innerHTML=recs.map((r,i)=>{
+    const a=analyse(r.vals),t=window.TAROT[r.card.id];
+    const d=new Date(r.date).toLocaleString("zh-TW",{hour12:false});
+    return `<div class="rec" data-i="${i}"><button class="del" data-d="${i}">刪除</button>
+    <div class="rd">${d}</div><div class="rq">${r.q||"（未填問題）"}</div>
+    <div class="rh">${a.base.full}${a.chgIdx.length?"→"+a.changed.name:""}　×　${t.name}${r.card.rev?"（逆）":""}</div></div>`;
+  }).join("");
+  box.querySelectorAll(".del").forEach(b=>b.onclick=e=>{
+    e.stopPropagation();
+    const recs=getCRecs();recs.splice(+b.dataset.d,1);
+    localStorage.setItem("yj_combo_recs",JSON.stringify(recs));renderCRecs();
+  });
+  box.querySelectorAll(".rec").forEach(el=>el.onclick=()=>{
+    const r=getCRecs()[+el.dataset.i];if(!r)return;
+    const a=analyse(r.vals);
+    openSheet(`<h2 style="letter-spacing:.15em;margin-bottom:4px">合璧回顧</h2>
+    <p class="modern">${r.q||"（未填問題）"}</p>
+    <p class="modern" style="font-size:.8em">${new Date(r.date).toLocaleString("zh-TW",{hour12:false})}</p>
+    ${comboBoxes(a,r.card)}
+    ${r.note?`<h3>當時的筆記</h3><p class="modern">${r.note}</p>`:""}`);
+  });
+}
+renderCRecs();
+
+/* ---- 牌陣定義 ---- */
+const SPREADS={
+  one:{labels:["指引"],desc:"抽一張牌，作為當下的指引"},
+  time:{labels:["過去","現在","未來"],desc:"事情的來龍去脈：過去的因、現在的勢、未來的向"},
+  tri:{labels:["問題","障礙","建議"],desc:"聖三角：看清問題本質、卡住的點，以及可行的路"},
+  ab:{labels:["現狀","選擇A","選擇B"],desc:"二擇一：先看現狀，再看兩條路各自的風景"},
+  celtic:{labels:["現狀","挑戰","根源","過去","目標","走向"],desc:"簡化凱爾特十字：六張牌縱觀全局，適合複雜的問題"}
+};
+function spreadLabels(s){if(s===3||s==="time")return SPREADS.time.labels;if(SPREADS[s])return SPREADS[s].labels;return SPREADS.one.labels;}
+
+/* ---- 每日一牌 ---- */
+function renderTDaily(){
+  if(!window.TAROT||!$("#tDailyCard"))return;
+  const d=new Date(),s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+  let x=Math.imul(s^0x9e3779b9,2654435761);x=Math.imul(x^(x>>>13),1274126177);x=(x^(x>>>16))>>>0;
+  const t=window.TAROT[x%78];
+  $("#tDailyCard").innerHTML=`<h2>每日一牌</h2><div style="display:flex;align-items:center;gap:16px">
+  <div style="width:84px;flex-shrink:0;border-radius:8px;overflow:hidden">${cardFrontSVG(t,false)}</div>
+  <div style="flex:1"><div style="font-weight:700;letter-spacing:.1em">${t.name} <span style="color:var(--ink2);font-size:.8em">${t.en}</span></div>
+  <div class="kwline">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+  <p class="modern" style="margin:4px 0">${t.g}</p>
+  <button class="ghost" style="margin-top:2px" onclick="openTCard(${t.id})">研讀此牌</button></div></div>`;
+}
+renderTDaily();
+
 /* ---- 抽牌 ---- */
-let tSpread=1,tDrawn=null;
+let tSpread="one",tDrawn=null;
 document.querySelectorAll(".mode[data-sp]").forEach(m=>m.onclick=()=>{
-  tSpread=+m.dataset.sp;
+  tSpread=m.dataset.sp;
   document.querySelectorAll(".mode[data-sp]").forEach(x=>x.classList.toggle("on",x===m));
+  $("#spDesc").textContent=SPREADS[tSpread].desc;
 });
-const POS3=["過去","現在","未來"];
 $("#shuffleBtn").onclick=()=>{
+  const labels=spreadLabels(tSpread);
   const deck=[...Array(78).keys()];
   for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
   tDrawn={q:$("#tQuestion").value.trim(),date:new Date().toISOString(),spread:tSpread,
-    cards:deck.slice(0,tSpread).map(id=>({id,rev:Math.random()<0.5}))};
+    cards:deck.slice(0,labels.length).map(id=>({id,rev:Math.random()<0.5}))};
   $("#tResult").innerHTML="";
   $("#tInfo").textContent="輕點牌背，翻開你的牌";
   $("#spreadArea").innerHTML=tDrawn.cards.map((c,i)=>`
     <div><div class="tcard" data-i="${i}"><div class="tin">
       <div class="tface tback">${cardBackSVG()}</div>
       <div class="tface tfront">${cardFrontSVG(window.TAROT[c.id],c.rev)}</div>
-    </div></div><div class="tlabel">${tSpread===3?POS3[i]:"指引"}</div></div>`).join("");
+    </div></div><div class="tlabel">${labels[i]}</div></div>`).join("");
   let flipped=0;
   $("#spreadArea").querySelectorAll(".tcard").forEach(el=>el.onclick=()=>{
     if(el.classList.contains("flip"))return;
     el.classList.add("flip");flipped++;
-    if(flipped===tSpread)setTimeout(showTResult,800);
+    if(flipped===labels.length)setTimeout(showTResult,800);
   });
 };
 function tMeanHtml(c,rev,posLabel){
   const t=window.TAROT[c];
+  const e=window.TAROT_EXT&&window.TAROT_EXT[c];
+  const ctx=e?`<p class="modern" style="font-size:.88em;border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">
+  <b style="color:var(--accent)">感情</b>　${rev?e.rl:e.ul}<br>
+  <b style="color:var(--accent)">事業</b>　${rev?e.rw:e.uw}${rev?"":`<br><b style="color:var(--accent)">財務</b>　${e.um}`}</p>`:"";
   return `<div class="tmean"><div class="tt">${posLabel?posLabel+"・":""}${t.name} <span style="color:var(--ink2);font-size:.8em">${t.en}</span><span class="rv">${rev?"逆位":"正位"}</span></div>
   <div class="tk">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
   <p class="modern">${rev?t.rev:t.up}</p>
   ${rev?`<p class="modern" style="font-size:.85em;opacity:.8">正位參照：${t.up}</p>`:""}
+  ${ctx}
   <p class="tg">${t.g}</p></div>`;
 }
 function showTResult(){
   if(!tDrawn)return;
+  const labels=spreadLabels(tDrawn.spread);
   let html=`<div class="card"><h2>牌義</h2>`;
-  tDrawn.cards.forEach((c,i)=>{html+=tMeanHtml(c.id,c.rev,tDrawn.spread===3?POS3[i]:"");});
+  tDrawn.cards.forEach((c,i)=>{html+=tMeanHtml(c.id,c.rev,labels.length>1?labels[i]:"");});
   html+=`<button class="ghost" id="tSaveBtn">儲存此次占卜</button>
   <button class="ghost" id="tToYi" style="margin-left:8px">用易經占同一問題</button></div>`;
   $("#tResult").innerHTML=html;
@@ -1011,12 +1189,23 @@ $("#suitBar").addEventListener("click",e=>{
 });
 function openTCard(id){
   const t=window.TAROT[id];
+  const e=window.TAROT_EXT&&window.TAROT_EXT[id];
+  let extHtml="";
+  if(e){
+    extHtml=`<h3 style="margin:12px 0 4px">牌面象徵</h3><p class="modern">${e.sym}</p>
+    <h3 style="margin:12px 0 4px">情境解讀</h3>
+    <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em">正位</div>
+    <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.ul}<br><b style="color:var(--accent)">事業</b>　${e.uw}<br><b style="color:var(--accent)">財務</b>　${e.um}</p></div>
+    <div class="tmean"><div class="tt" style="font-size:.92em">逆位</div>
+    <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.rl}<br><b style="color:var(--accent)">事業</b>　${e.rw}</p></div>`;
+  }
   openSheet(`<div style="text-align:center"><div style="width:140px;margin:0 auto">${cardFrontSVG(t,false)}</div>
   <h2 style="margin:10px 0 2px;letter-spacing:.15em">${t.name}</h2>
   <p style="color:var(--ink2);font-size:.85em">${t.en}・${SUIT[t.arc]}${ELEM[t.arc]?"・屬"+ELEM[t.arc]:""}</p>
   <div class="kwline">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div></div>
   <h3 style="margin:12px 0 4px">正位</h3><p class="modern">${t.up}</p>
   <h3 style="margin:12px 0 4px">逆位</h3><p class="modern">${t.rev}</p>
+  ${extHtml}
   <div class="scard"><div class="scl">${t.g}</div><div class="scn">靈燈句</div></div>`);
 }
 if(window.TAROT)renderDeck("all");
@@ -1039,9 +1228,10 @@ function renderTRecs(){
   });
   box.querySelectorAll(".rec").forEach(el=>el.onclick=()=>{
     const r=getTRecs()[+el.dataset.i];if(!r)return;
+    const labels=spreadLabels(r.spread);
     let html=`<h2 style="letter-spacing:.15em;margin-bottom:4px">牌陣回顧</h2>
     <p class="modern">${r.q||"（未填問題）"}</p><p class="modern" style="font-size:.8em">${new Date(r.date).toLocaleString("zh-TW",{hour12:false})}</p>`;
-    r.cards.forEach((c,i)=>{html+=tMeanHtml(c.id,c.rev,r.spread===3?POS3[i]:"");});
+    r.cards.forEach((c,i)=>{html+=tMeanHtml(c.id,c.rev,labels.length>1?labels[i]:"");});
     openSheet(html);
   });
 }
