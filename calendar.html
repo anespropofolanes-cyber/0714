@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>靈燈日曆</title>
+<script>try{var _r=document.documentElement,_t=localStorage.getItem("yj_theme");_r.dataset.theme=_t||((window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");_r.dataset.font=localStorage.getItem("yj_font")||"serif";_r.dataset.size=localStorage.getItem("yj_size")||"m";}catch(e){}</script>
 <link rel="apple-touch-icon" href="lingdeng-180.png">
 <meta name="theme-color" content="#eef3ec">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +27,7 @@
 [data-font="sans"] body{font-family:var(--sans)}
 [data-size="s"]{font-size:14px}[data-size="m"]{font-size:16px}[data-size="l"]{font-size:19px}
 *{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)}
 body{background:var(--bg);color:var(--ink);line-height:1.8;transition:background .4s,color .4s;min-height:100vh}
 #stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s}
 [data-theme="dark"] #stars{opacity:1}
@@ -76,6 +78,28 @@ summary{padding:11px 16px;cursor:pointer;letter-spacing:.1em;color:var(--ink)}
 details>div{padding:0 16px 14px;font-size:.92em;color:var(--ink2)}
 footer{text-align:center;color:var(--ink2);font-size:.78em;margin-top:36px;letter-spacing:.08em;line-height:2}
 footer span{white-space:nowrap;display:inline-block}
+.dmain{cursor:pointer;border-radius:12px;transition:.2s;padding:4px}
+.dmain:hover{background:var(--bg2)}
+.dhint{color:var(--ink2);font-size:.7em;letter-spacing:.15em;margin-top:2px}
+/* 月曆選擇器 */
+.pk-overlay{position:fixed;inset:0;background:rgba(10,18,12,.5);z-index:50;display:none;align-items:center;justify-content:center;padding:16px}
+.pk-overlay.on{display:flex}
+.pk{background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:18px;width:100%;max-width:360px;box-shadow:var(--shadow);animation:pkup .25s}
+@keyframes pkup{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.pk-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pk-head .pk-title{font-weight:700;letter-spacing:.12em;font-size:1.05em}
+.pk-head button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;width:34px;height:34px;cursor:pointer;font-size:.95em;font-family:inherit}
+.pk-head button:hover{border-color:var(--accent)}
+.pk-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;color:var(--ink2);font-size:.78em;margin-bottom:4px;letter-spacing:.05em}
+.pk-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.pk-day{aspect-ratio:1;border:none;background:transparent;color:var(--ink);border-radius:50%;cursor:pointer;font-family:inherit;font-size:.95em;display:flex;align-items:center;justify-content:center;transition:.15s}
+.pk-day:hover{background:var(--bg2)}
+.pk-day.dim{color:var(--line)}
+.pk-day.today{box-shadow:inset 0 0 0 1.5px var(--accent)}
+.pk-day.sel{background:var(--accent);color:var(--bg);font-weight:700}
+.pk-foot{display:flex;gap:8px;margin-top:12px}
+.pk-foot button{flex:1;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:9px;cursor:pointer;font-family:inherit;font-size:.9em;letter-spacing:.1em}
+.pk-foot button:hover{border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -88,7 +112,7 @@ footer span{white-space:nowrap;display:inline-block}
     <button class="tbtn" id="fontBtn">明體</button>
     <button class="tbtn" id="sizeBtn">字級 中</button>
     <button class="tbtn" id="themeBtn">深夜模式</button>
-    <a class="tbtn" href="index.html">靈燈易經</a>
+    <a class="tbtn" href="./index.html" onclick="location.href='./index.html';return false;">靈燈易經</a>
   </div>
 </header>
 
@@ -97,6 +121,7 @@ footer span{white-space:nowrap;display:inline-block}
     <button id="prevD">‹</button>
     <div class="dmain">
       <div class="dnum" id="solarDate"></div>
+      <div class="dhint">點日期可選擇任一天</div>
       <div class="dsub" id="lunarLine"></div>
       <div class="dsub" id="ganzhiLine"></div>
       <div class="dsub" id="termLine"></div>
@@ -104,6 +129,22 @@ footer span{white-space:nowrap;display:inline-block}
     <button id="nextD">›</button>
   </div>
   <div class="today-link" id="backToday" style="display:none"><a>回到今天</a></div>
+</div>
+
+<div class="pk-overlay" id="pkOverlay">
+  <div class="pk">
+    <div class="pk-head">
+      <button id="pkPrevY">«</button><button id="pkPrevM">‹</button>
+      <div class="pk-title" id="pkTitle"></div>
+      <button id="pkNextM">›</button><button id="pkNextY">»</button>
+    </div>
+    <div class="pk-week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+    <div class="pk-grid" id="pkGrid"></div>
+    <div class="pk-foot">
+      <button id="pkToday">回到今天</button>
+      <button id="pkClose">關閉</button>
+    </div>
+  </div>
 </div>
 
 <div class="card" id="hexCard"></div>
@@ -247,7 +288,7 @@ function render(){
   const t=currentTermInfo(d),cs=chongSha(d);
   $("#termLine").innerHTML=`${t.name}・第${t.dayN}天（${t.next} ${t.nextDate.getMonth()+1}/${t.nextDate.getDate()}）　沖${cs.zodiac}（${cs.branch}）煞${cs.sha}`;
   /* 今日卦象 */
-  const hx=H[seedOf(d)%64],D=window.HEX_DEEP[hx.id];
+  const hx=H[seedOf(d)%64],D=window.HEX_DEEP&&window.HEX_DEEP[hx.id];
   $("#hexCard").innerHTML=`<h2>今日卦象</h2>
   <div class="hexrow"><div class="hx">${miniHex(hx.arr)}</div>
   <div style="flex:1"><div style="font-weight:700;letter-spacing:.12em;font-size:1.1em">${hx.full}</div>
@@ -256,7 +297,7 @@ function render(){
   ${D?`<div class="note"><b style="color:var(--accent2)">今日提醒</b>　${D.re}</div>`:""}
   ${D?`<div class="scard" style="margin-top:10px"><div class="scl">${D.bl}</div><div class="scn">今日靈燈句</div></div>`:""}`;
   /* 宜忌（建除） */
-  const jc=jianchu(d),J=window.JIANCHU[jc];
+  const jc=jianchu(d),J=(window.JIANCHU||{})[jc]||{m:"資料載入中",good:[],bad:[],note:"caldata.js 尚未載入，請確認檔案已上傳。"};
   $("#yijiCard").innerHTML=`<h2>今日宜忌</h2>
   <p class="modern">${dayGanzhi(d)}日・<b style="color:var(--accent2)">${jc}日</b>——${J.m}</p>
   <p style="margin-top:8px;font-weight:700;letter-spacing:.1em">今日適合</p>
@@ -265,17 +306,53 @@ function render(){
   <div class="glist">${J.bad.map(g=>`<div class="no">${g}</div>`).join("")}</div>
   <div class="note">${J.note}</div>`;
   /* 每日一句 */
-  const q=window.CAL_QUOTES[seedOf(d)%window.CAL_QUOTES.length];
+  const q=(window.CAL_QUOTES&&window.CAL_QUOTES[seedOf(d)%window.CAL_QUOTES.length])||{q:"",s:""};
   $("#quoteBox").innerHTML=`<div class="qt">${q.q}</div><div class="qs">——${q.s}</div>`;
   /* 今日故事：384爻卡輪播 */
   const allCards=[];
-  Object.keys(window.CARDS).forEach(hid=>{window.CARDS[hid].forEach((c,i)=>allCards.push({hid:+hid,i,c}));});
+  Object.keys(window.CARDS||{}).forEach(hid=>{window.CARDS[hid].forEach((c,i)=>allCards.push({hid:+hid,i,c}));});
+  if(!allCards.length){$("#storyCard").innerHTML="<h2>今日故事</h2><p class='modern'>資料載入中</p>";return;}
   const pick=allCards[seedOf(d)%allCards.length];
   const ph=H[pick.hid-1],pl=ph.lines[pick.i];
   $("#storyCard").innerHTML=`<h2>今日故事</h2>
   <div class="scard"><div class="sct">《${pick.c.t}》</div><div class="scs">${pick.c.s}</div>
   <div class="scl">${pick.c.l}</div><div class="scn">${ph.name}卦・${pl.n}　${pl.t}</div></div>`;
 }
+/* ---------- 月曆選擇器 ---------- */
+let pkY,pkM;
+function openPicker(){pkY=cur.getFullYear();pkM=cur.getMonth();drawPicker();$("#pkOverlay").classList.add("on");}
+function drawPicker(){
+  $("#pkTitle").textContent=`${pkY} 年 ${pkM+1} 月`;
+  const first=new Date(pkY,pkM,1),startDow=first.getDay();
+  const daysIn=new Date(pkY,pkM+1,0).getDate();
+  const prevDays=new Date(pkY,pkM,0).getDate();
+  const today=new Date();
+  let cells="";
+  for(let i=0;i<42;i++){
+    let y=pkY,m=pkM,dd,dim=false;
+    const offset=i-startDow+1;
+    if(offset<1){dd=prevDays+offset;m=pkM-1;dim=true;}
+    else if(offset>daysIn){dd=offset-daysIn;m=pkM+1;dim=true;}
+    else dd=offset;
+    const dt=new Date(y,m,dd);
+    const isToday=dt.toDateString()===today.toDateString();
+    const isSel=dt.toDateString()===cur.toDateString();
+    cells+=`<button class="pk-day ${dim?"dim":""} ${isToday?"today":""} ${isSel?"sel":""}" data-t="${dt.getTime()}">${dd}</button>`;
+  }
+  $("#pkGrid").innerHTML=cells;
+  $("#pkGrid").querySelectorAll(".pk-day").forEach(b=>b.onclick=()=>{
+    cur=new Date(+b.dataset.t);render();$("#pkOverlay").classList.remove("on");
+  });
+}
+document.querySelector(".dmain").onclick=openPicker;
+$("#pkPrevM").onclick=()=>{pkM--;if(pkM<0){pkM=11;pkY--;}drawPicker();};
+$("#pkNextM").onclick=()=>{pkM++;if(pkM>11){pkM=0;pkY++;}drawPicker();};
+$("#pkPrevY").onclick=()=>{pkY--;drawPicker();};
+$("#pkNextY").onclick=()=>{pkY++;drawPicker();};
+$("#pkToday").onclick=()=>{cur=new Date();render();$("#pkOverlay").classList.remove("on");};
+$("#pkClose").onclick=()=>$("#pkOverlay").classList.remove("on");
+$("#pkOverlay").onclick=e=>{if(e.target===$("#pkOverlay"))$("#pkOverlay").classList.remove("on");};
+
 $("#prevD").onclick=()=>{cur.setDate(cur.getDate()-1);render();};
 $("#nextD").onclick=()=>{cur.setDate(cur.getDate()+1);render();};
 $("#backToday").onclick=()=>{cur=new Date();render();};
