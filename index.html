@@ -194,6 +194,13 @@ h1{cursor:pointer;user-select:none}
 .suitbar{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
 .suitbtn{border:1px solid var(--line);background:var(--bg);color:var(--ink2);border-radius:16px;padding:4px 12px;font-size:.82em;cursor:pointer;font-family:inherit}
 .suitbtn.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+.blist div{padding-left:1.15em;text-indent:-1.15em;margin:4px 0;text-align:left}
+details>div{overflow-x:auto}
+.facet{display:flex;gap:10px;margin:7px 0;font-size:.92em;line-height:1.8;text-align:left}
+.facet .fl{flex-shrink:0;min-width:2.4em;color:var(--accent);font-weight:700;letter-spacing:.1em}
+.facet .fx{flex:1;color:var(--ink2)}
+.facet.hot .fl{color:var(--accent2)}
+.facet.hot .fx{color:var(--ink);font-weight:600}
 .combo{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
 .cbox{flex:1;min-width:225px;border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center;background:var(--bg)}
 .cbox .nm{font-weight:700;letter-spacing:.1em;margin:8px 0 4px}
@@ -1227,7 +1234,7 @@ function spreadAnalysis(cards){
   if(courts>=2)hints.push(`宮廷牌偏多（×${courts}）：關鍵在「人」——性格與角色，而非事件本身。`);
   if(revs>n/2)hints.push(`逆位過半（${revs}/${n}）：功課多在內心，先整理自己，再處理事情。`);
   if(!hints.length)return"";
-  return `<div class="guide"><b>牌陣分析</b><br>${hints.map(h=>"・"+h).join("<br>")}</div>`;
+  return `<div class="guide blist"><b>牌陣分析</b>${hints.map(h=>`<div>・${h}</div>`).join("")}</div>`;
 }
 function tMeanHtml(c,rev,posLabel,focus){
   const t=window.TAROT[c];
@@ -1237,11 +1244,7 @@ function tMeanHtml(c,rev,posLabel,focus){
     let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
     if(!rev)lines.push(["money","財務",e.um]);
     if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
-    ctx=`<p class="modern" style="font-size:.88em;border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">${
-      lines.map(l=>{
-        const hot=focus===l[0];
-        return `<b style="color:var(--accent${hot?"2":""})">${l[1]}${hot?"（聚焦）":""}</b>　${hot?`<b>${l[2]}</b>`:l[2]}`;
-      }).join("<br>")}</p>`;
+    ctx=`<div style="border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">${facetRows(lines,focus)}</div>`;
   }
   return `<div class="tmean"><div class="tt">${posLabel?posLabel+"・":""}${t.name} <span style="color:var(--ink2);font-size:.8em">${t.en}</span><span class="rv">${rev?"逆位":"正位"}</span></div>
   <div class="tk">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
@@ -1250,6 +1253,12 @@ function tMeanHtml(c,rev,posLabel,focus){
   ${ctx}
   <p class="tg">${t.g}</p></div>`;
 }
+/* ---- 面向排版 ---- */
+function facetRows(lines,focus){
+  return lines.map(l=>{const hot=focus===l[0];
+    return `<div class="facet ${hot?"hot":""}"><span class="fl">${l[1]}</span><span class="fx">${hot?"（聚焦）":""}${l[2]}</span></div>`;}).join("");
+}
+
 /* ---- 五段式深度解讀 ---- */
 function tReadingHtml(cid,rev,posLabel,focus){
   const t=window.TAROT[cid];
@@ -1262,8 +1271,7 @@ function tReadingHtml(cid,rev,posLabel,focus){
     if(!rev)lines.push(["money","財務",e.um]);
     lines.push(["grow","成長",d.gr]);
     if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
-    facets=lines.map(l=>{const hot=focus===l[0];
-      return `<b style="color:var(--accent${hot?"2":""})">${l[1]}${hot?"（聚焦）":""}</b>　${hot?`<b>${l[2]}</b>`:l[2]}`;}).join("<br>");
+    facets=facetRows(lines,focus);
   }
   return `<div class="tmean">
   <div class="tt">${posLabel?posLabel+"・":""}${t.name} <span style="color:var(--ink2);font-size:.8em">${t.en}</span><span class="rv">${rev?"逆位":"正位"}</span></div>
@@ -1271,8 +1279,8 @@ function tReadingHtml(cid,rev,posLabel,focus){
   <div class="dsec"><b>一・這張牌的主題</b><p class="modern" style="margin-top:2px">${d.th}。${rev?t.rev:t.up}</p></div>
   <div class="dsec"><b>二・你現在可能的狀態</b><p class="modern" style="margin-top:2px">${rev?d.rs:d.st}</p></div>
   <div class="dsec"><b>三・牌面提醒</b><p class="modern" style="margin-top:2px">${d.re}</p></div>
-  <div class="dsec"><b>四・具體建議</b><p class="modern" style="margin-top:2px">${d.ac.map(a=>"・"+a).join("<br>")}</p></div>
-  ${facets?`<details style="margin:8px 0"><summary style="padding:8px 12px;font-size:.88em">四個面向：感情・事業・財務・成長</summary><div><p class="modern" style="font-size:.9em">${facets}</p></div></details>`:""}
+  <div class="dsec"><b>四・具體建議</b><div class="modern blist" style="margin-top:2px">${d.ac.map(a=>`<div>・${a}</div>`).join("")}</div></div>
+  ${facets?`<details style="margin:8px 0"><summary style="padding:8px 12px;font-size:.88em">四個面向：感情・事業・財務・成長</summary><div>${facets}</div></details>`:""}
   <div class="scard" style="margin:10px 0 4px"><div class="scl">${d.bl}</div><div class="scn">五・一句祝福　${t.g}</div></div>
   </div>`;
 }
@@ -1387,12 +1395,12 @@ function openTCard(id){
   h+=`<h3 style="margin:12px 0 4px">正位含義</h3><p class="modern">${t.up}</p>
   <h3 style="margin:12px 0 4px">逆位含義</h3><p class="modern">${t.rev}</p>`;
   if(e&&d)h+=`<h3 style="margin:12px 0 4px">四個面向</h3>
-  <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em">正位</div>
-  <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.ul}<br><b style="color:var(--accent)">工作</b>　${e.uw}<br><b style="color:var(--accent)">金錢</b>　${e.um}<br><b style="color:var(--accent)">成長</b>　${d.gr}</p></div>
-  <div class="tmean"><div class="tt" style="font-size:.92em">逆位</div>
-  <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.rl}<br><b style="color:var(--accent)">工作</b>　${e.rw}</p></div>`;
+  <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em;margin-bottom:6px">正位</div>
+  ${facetRows([["","感情",e.ul],["","工作",e.uw],["","金錢",e.um],["","成長",d.gr]])}</div>
+  <div class="tmean"><div class="tt" style="font-size:.92em;margin-bottom:6px">逆位</div>
+  ${facetRows([["","感情",e.rl],["","工作",e.rw]])}</div>`;
   if(d)h+=`<h3 style="margin:12px 0 4px">這張牌想提醒你的事</h3><p class="modern">${d.re}</p>
-  <h3 style="margin:12px 0 4px">適合的行動建議</h3><p class="modern">${d.ac.map(a=>"・"+a).join("<br>")}</p>`;
+  <h3 style="margin:12px 0 4px">適合的行動建議</h3><div class="modern blist">${d.ac.map(a=>`<div>・${a}</div>`).join("")}</div>`;
   h+=`<div class="scard"><div class="sct" style="font-size:.95em">${d?d.bl:""}</div><div class="scl">${t.g}</div><div class="scn">詩意總結</div></div>`;
   openSheet(h);
 }
