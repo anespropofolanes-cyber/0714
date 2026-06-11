@@ -53,6 +53,8 @@ textarea,input[type=text]{width:100%;border:1px solid var(--line);background:var
 textarea:focus,input:focus{outline:none;border-color:var(--accent)}
 #question{line-height:1.9}
 #question::placeholder{text-align:center;letter-spacing:.12em;line-height:1.9;color:var(--ink2);opacity:.85}
+#tQuestion{line-height:1.9}
+#tQuestion::placeholder{text-align:center;letter-spacing:.08em;line-height:1.9;color:var(--ink2);opacity:.85;font-style:italic}
 .modes{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
 .mode{flex:1;min-width:90px;border:1px solid var(--line);background:var(--bg);color:var(--ink2);border-radius:10px;padding:9px 4px;text-align:center;cursor:pointer;font-size:.9em;transition:.25s}
 .mode.on{border-color:var(--accent);color:var(--ink);background:var(--card);font-weight:700}
@@ -423,11 +425,12 @@ h1{cursor:pointer;user-select:none}
 
 <section class="page on" id="tp-draw">
   <div class="card" id="tDailyCard"></div>
+  <div class="card" id="lifeCard"></div>
   <div class="card">
     <h2>所問之事</h2>
-    <textarea id="tQuestion" rows="3" placeholder="靜心三息，一問一事。
-牌不決定命運，卻能照見方向。
-先觀自己，再觀星辰。"></textarea>
+    <textarea id="tQuestion" rows="3" placeholder="What you seek is seeking you.
+你正在尋找的，
+也正在尋找你。"></textarea>
     <div class="modes">
       <div class="mode on" data-sp="one">單張指引</div>
       <div class="mode" data-sp="time">時序三張</div>
@@ -436,6 +439,12 @@ h1{cursor:pointer;user-select:none}
       <div class="mode" data-sp="celtic">凱爾特</div>
     </div>
     <p style="color:var(--ink2);font-size:.85em;text-align:center" id="spDesc">抽一張牌，作為當下的指引</p>
+    <div class="suitbar" id="focusBar" style="justify-content:center;margin-top:8px">
+      <button class="suitbtn on" data-f="all">整體</button>
+      <button class="suitbtn" data-f="love">聚焦感情</button>
+      <button class="suitbtn" data-f="work">聚焦事業</button>
+      <button class="suitbtn" data-f="money">聚焦財務</button>
+    </div>
     <button class="big" id="shuffleBtn">洗 牌 抽 牌</button>
     <div class="spread" id="spreadArea"></div>
     <p class="tossinfo" id="tInfo"></p>
@@ -476,6 +485,7 @@ h1{cursor:pointer;user-select:none}
   <div class="card">
     <h2>塔羅紀錄</h2>
     <p style="color:var(--ink2);font-size:.88em;margin-bottom:12px">紀錄儲存在本機瀏覽器中。點選可重看牌陣。</p>
+    <div id="tStats"></div>
     <div id="tRecList"></div>
   </div>
 </section>
@@ -577,6 +587,7 @@ h1{cursor:pointer;user-select:none}
 <script src="learn.js"></script>
 <script src="tarot.js"></script>
 <script src="tarot-ext.js"></script>
+<script src="tarot-deep.js"></script>
 <script>
 const TRI={"乾":[1,1,1],"兌":[1,1,0],"離":[1,0,1],"震":[1,0,0],"巽":[0,1,1],"坎":[0,1,0],"艮":[0,0,1],"坤":[0,0,0]};
 const TRINAT={"乾":"天","兌":"澤","離":"火","震":"雷","巽":"風","坎":"水","艮":"山","坤":"地"};
@@ -973,6 +984,33 @@ function suitGlyph(arc){
   if(arc==="pentacles")return `<circle cx="0" cy="0" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M0 -6 L3.5 4.8 L-5.7 -1.8 L5.7 -1.8 L-3.5 4.8 Z" fill="none" stroke="currentColor" stroke-width="1.4"/>`;
   return `<path d="M0 -9 L2.6 -2.8 L9 -2.8 L3.8 1.4 L5.8 8 L0 4 L-5.8 8 L-3.8 1.4 L-9 -2.8 L-2.6 -2.8 Z" fill="currentColor"/>`;
 }
+function majorGlyph(id){
+  const G=[
+  `<path d="M-6 8 L6 -8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="6" cy="-8" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/>`,
+  `<path d="M0 -9 L0 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="0" cy="-9" r="1.8" fill="currentColor"/><circle cx="0" cy="9" r="1.8" fill="currentColor"/>`,
+  `<path d="M3 -9 A9 9 0 1 0 3 9 A7 7 0 1 1 3 -9 Z" fill="currentColor"/>`,
+  `<circle cx="0" cy="-4" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M0 1 L0 9 M-4 5 L4 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`,
+  `<rect x="-6" y="-4" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M-6 -4 L-6 -9 M6 -4 L6 -9 M0 -4 L0 -8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`,
+  `<path d="M0 -10 L0 10 M-4 -6 L4 -6 M-6 -2 L6 -2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`,
+  `<circle cx="-3.5" cy="0" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="3.5" cy="0" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/>`,
+  `<rect x="-7" y="-7" width="14" height="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="-4.5" cy="5" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="4.5" cy="5" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/>`,
+  `<path d="M-9 0 C-9 -5 -2 -5 0 0 C2 5 9 5 9 0 C9 -5 2 -5 0 0 C-2 5 -9 5 -9 0 Z" fill="none" stroke="currentColor" stroke-width="1.8"/>`,
+  `<rect x="-4" y="-5" width="8" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M0 -5 L0 -9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="0" cy="0" r="1.8" fill="currentColor"/>`,
+  `<circle cx="0" cy="0" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M0 -9 L0 9 M-9 0 L9 0 M-6.4 -6.4 L6.4 6.4 M-6.4 6.4 L6.4 -6.4" stroke="currentColor" stroke-width="1.1"/>`,
+  `<path d="M0 -9 L0 9 M-4 9 L4 9 M-8 -5 L8 -5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M-8 -5 L-8 1 M8 -5 L8 1" stroke="currentColor" stroke-width="1.2"/><path d="M-10.5 1 A2.8 2.8 0 0 0 -5.5 1 M5.5 1 A2.8 2.8 0 0 0 10.5 1" fill="none" stroke="currentColor" stroke-width="1.2"/>`,
+  `<path d="M-6 -8 L6 -8 L0 2 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="0" cy="6.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/>`,
+  `<path d="M-4 9 L2 -8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M2 -8 Q10 -5 7.5 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`,
+  `<circle cx="0" cy="3" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M-6 -9 L6 -9 L0 -1 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>`,
+  `<g transform="rotate(180)"><path d="M0 -9 L2.6 -2.8 L9 -2.8 L3.8 1.4 L5.8 8 L0 4 L-5.8 8 L-3.8 1.4 L-9 -2.8 L-2.6 -2.8 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></g>`,
+  `<path d="M-4 9 L-4 -7 L4 -7 L4 9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M-6 -7 L6 -7" stroke="currentColor" stroke-width="1.6"/><path d="M3 -10 L-1 -4 L2 -3 L-2 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>`,
+  `<path d="M0 -6 L1.7 -1.9 L6 -1.9 L2.5 0.9 L3.9 5.3 L0 2.7 L-3.9 5.3 L-2.5 0.9 L-6 -1.9 L-1.7 -1.9 Z" fill="currentColor"/><circle cx="6.5" cy="-7" r="1.3" fill="currentColor"/><circle cx="-7" cy="-5.5" r="1.3" fill="currentColor"/>`,
+  `<circle cx="0" cy="-3" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M-9 7 Q-4.5 4 0 7 Q4.5 10 9 7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>`,
+  `<circle cx="0" cy="0" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M0 -10 L0 -7.5 M0 7.5 L0 10 M-10 0 L-7.5 0 M7.5 0 L10 0 M-7.4 -7.4 L-5.2 -5.2 M5.2 5.2 L7.4 7.4 M-7.4 7.4 L-5.2 5.2 M5.2 -5.2 L7.4 -7.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>`,
+  `<path d="M-9 -4 L-1 -8 L-1 8 L-9 4 Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M2 -4 A6 6 0 0 1 2 4 M5 -7 A10 10 0 0 1 5 7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>`,
+  `<circle cx="0" cy="0" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 2.4"/><circle cx="0" cy="0" r="2" fill="currentColor"/>`
+  ];
+  return G[id]||G[0];
+}
 function cardFrontSVG(c,rev){
   const vName=c.name.split("").join("\n");
   return `<svg viewBox="0 0 108 178" width="100%" height="100%" style="background:var(--card)">
@@ -980,7 +1018,7 @@ function cardFrontSVG(c,rev){
   <rect x="4" y="4" width="100" height="170" rx="8" fill="none" stroke="var(--gold)" stroke-width="2"/>
   <rect x="9" y="9" width="90" height="160" rx="5" fill="none" stroke="var(--line)" stroke-width="1"/>
   <text x="54" y="28" text-anchor="middle" font-size="14" fill="var(--accent)" font-weight="700">${c.num}</text>
-  <g transform="translate(54,52)" style="color:var(--gold)">${suitGlyph(c.arc)}</g>
+  <g transform="translate(54,52)" style="color:var(--gold)">${c.arc==="major"?majorGlyph(c.id):suitGlyph(c.arc)}</g>
   <text x="54" y="${78}" text-anchor="middle" font-size="17" fill="var(--ink)" font-weight="700" style="letter-spacing:.05em">${c.name.length>4?`<tspan font-size="13">${c.name}</tspan>`:c.name}</text>
   <text x="54" y="150" text-anchor="middle" font-size="8.5" fill="var(--ink2)">${c.en}</text>
   <text x="54" y="163" text-anchor="middle" font-size="8" fill="var(--accent2)">${rev?"逆位":"正位"}</text>
@@ -1019,7 +1057,7 @@ if(localStorage.getItem("yj_mode")==="tarot")setMode("tarot");
 document.querySelectorAll("#taroRoot nav button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#taroRoot nav button").forEach(x=>x.classList.toggle("on",x===b));
   document.querySelectorAll("#taroRoot .page").forEach(p=>p.classList.toggle("on",p.id==="tp-"+b.dataset.tp));
-  if(b.dataset.tp==="trecs")renderTRecs();
+  if(b.dataset.tp==="trecs"){renderTRecs();renderTStats();}
   if(b.dataset.tp==="combo")renderCRecs();
 });
 
@@ -1122,13 +1160,32 @@ document.querySelectorAll(".mode[data-sp]").forEach(m=>m.onclick=()=>{
   document.querySelectorAll(".mode[data-sp]").forEach(x=>x.classList.toggle("on",x===m));
   $("#spDesc").textContent=SPREADS[tSpread].desc;
 });
+let tFocus="all";
+$("#focusBar").addEventListener("click",e=>{
+  const b=e.target.closest(".suitbtn");if(!b)return;
+  tFocus=b.dataset.f;
+  $("#focusBar").querySelectorAll(".suitbtn").forEach(x=>x.classList.toggle("on",x===b));
+});
+let pendingDeck=null;
 $("#shuffleBtn").onclick=()=>{
-  const labels=spreadLabels(tSpread);
   const deck=[...Array(78).keys()];
   for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
-  tDrawn={q:$("#tQuestion").value.trim(),date:new Date().toISOString(),spread:tSpread,
-    cards:deck.slice(0,labels.length).map(id=>({id,rev:Math.random()<0.5}))};
+  pendingDeck=deck;
   $("#tResult").innerHTML="";
+  $("#tInfo").textContent="牌已洗好。請憑直覺，點選一疊切牌";
+  $("#spreadArea").innerHTML=[0,1,2].map(p=>`
+    <div><div class="tcard" data-pile="${p}" style="width:76px;height:126px"><div class="tin">
+      <div class="tface tback">${cardBackSVG()}</div>
+    </div></div><div class="tlabel">第${["一","二","三"][p]}疊</div></div>`).join("");
+  $("#spreadArea").querySelectorAll(".tcard").forEach(el=>el.onclick=()=>{
+    const cut=[17,35,53][+el.dataset.pile]+Math.floor(Math.random()*8);
+    dealCards(pendingDeck.slice(cut).concat(pendingDeck.slice(0,cut)));
+  });
+};
+function dealCards(deck){
+  const labels=spreadLabels(tSpread);
+  tDrawn={q:$("#tQuestion").value.trim(),date:new Date().toISOString(),spread:tSpread,focus:tFocus,
+    cards:deck.slice(0,labels.length).map(id=>({id,rev:Math.random()<0.5}))};
   $("#tInfo").textContent="輕點牌背，翻開你的牌";
   $("#spreadArea").innerHTML=tDrawn.cards.map((c,i)=>`
     <div><div class="tcard" data-i="${i}"><div class="tin">
@@ -1141,13 +1198,51 @@ $("#shuffleBtn").onclick=()=>{
     el.classList.add("flip");flipped++;
     if(flipped===labels.length)setTimeout(showTResult,800);
   });
-};
-function tMeanHtml(c,rev,posLabel){
+}
+
+/* ---- 牌陣自動分析 ---- */
+const NUMMEAN={1:"全新的開始",2:"平衡與抉擇",3:"初步成果",4:"穩定與停滯之間",5:"動盪與挑戰",6:"和諧與給予",7:"評估與堅持",8:"行動與力量",9:"接近完成",10:"循環的終點"};
+function spreadAnalysis(cards){
+  const n=cards.length;if(n<2)return"";
+  const hints=[];
+  const suits={wands:0,cups:0,swords:0,pentacles:0};let majors=0,courts=0,revs=0;
+  const nums={};
+  cards.forEach(c=>{
+    const t=window.TAROT[c.id];
+    if(c.rev)revs++;
+    if(t.arc==="major"){majors++;return;}
+    suits[t.arc]++;
+    if("PNQK".includes(t.num))courts++;
+    else{const v=t.num==="A"?1:+t.num;nums[v]=(nums[v]||0)+1;}
+  });
+  const SU={wands:["火","行動與熱情"],cups:["水","情感與直覺"],swords:["風","思考與溝通"],pentacles:["土","現實與資源"]};
+  Object.entries(suits).forEach(([s,c])=>{if(c>=2)hints.push(`${SU[s][0]}元素強盛（${SUIT[s]}×${c}）：${SU[s][1]}是這次的主旋律。`);});
+  const has=s=>suits[s]>0;
+  if(has("wands")&&has("swords"))hints.push("火借風勢：思考助長行動，乘勢而為。");
+  if(has("cups")&&has("pentacles"))hints.push("水土相生：情感落地，務實滋養。");
+  if(has("wands")&&has("cups"))hints.push("火水相遇：熱情與情感互相牽制，留意內在矛盾。");
+  if(has("swords")&&has("pentacles"))hints.push("風土相滯：想法多、落實慢，需要耐心與排序。");
+  Object.entries(nums).forEach(([v,c])=>{if(c>=2)hints.push(`數字${v}共振（×${c}）：「${NUMMEAN[v]}」的課題被加倍強調。`);});
+  if(majors>=Math.ceil(n/2))hints.push(`大牌密度高（${majors}/${n}）：這是帶有命運感的課題，順流比硬撐有用。`);
+  if(courts>=2)hints.push(`宮廷牌偏多（×${courts}）：關鍵在「人」——性格與角色，而非事件本身。`);
+  if(revs>n/2)hints.push(`逆位過半（${revs}/${n}）：功課多在內心，先整理自己，再處理事情。`);
+  if(!hints.length)return"";
+  return `<div class="guide"><b>牌陣分析</b><br>${hints.map(h=>"・"+h).join("<br>")}</div>`;
+}
+function tMeanHtml(c,rev,posLabel,focus){
   const t=window.TAROT[c];
   const e=window.TAROT_EXT&&window.TAROT_EXT[c];
-  const ctx=e?`<p class="modern" style="font-size:.88em;border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">
-  <b style="color:var(--accent)">感情</b>　${rev?e.rl:e.ul}<br>
-  <b style="color:var(--accent)">事業</b>　${rev?e.rw:e.uw}${rev?"":`<br><b style="color:var(--accent)">財務</b>　${e.um}`}</p>`:"";
+  let ctx="";
+  if(e){
+    let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
+    if(!rev)lines.push(["money","財務",e.um]);
+    if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
+    ctx=`<p class="modern" style="font-size:.88em;border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">${
+      lines.map(l=>{
+        const hot=focus===l[0];
+        return `<b style="color:var(--accent${hot?"2":""})">${l[1]}${hot?"（聚焦）":""}</b>　${hot?`<b>${l[2]}</b>`:l[2]}`;
+      }).join("<br>")}</p>`;
+  }
   return `<div class="tmean"><div class="tt">${posLabel?posLabel+"・":""}${t.name} <span style="color:var(--ink2);font-size:.8em">${t.en}</span><span class="rv">${rev?"逆位":"正位"}</span></div>
   <div class="tk">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
   <p class="modern">${rev?t.rev:t.up}</p>
@@ -1155,11 +1250,38 @@ function tMeanHtml(c,rev,posLabel){
   ${ctx}
   <p class="tg">${t.g}</p></div>`;
 }
+/* ---- 五段式深度解讀 ---- */
+function tReadingHtml(cid,rev,posLabel,focus){
+  const t=window.TAROT[cid];
+  const d=window.TAROT_DEEP&&window.TAROT_DEEP[cid];
+  if(!d)return tMeanHtml(cid,rev,posLabel,focus);
+  const e=window.TAROT_EXT&&window.TAROT_EXT[cid];
+  let facets="";
+  if(e){
+    let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
+    if(!rev)lines.push(["money","財務",e.um]);
+    lines.push(["grow","成長",d.gr]);
+    if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
+    facets=lines.map(l=>{const hot=focus===l[0];
+      return `<b style="color:var(--accent${hot?"2":""})">${l[1]}${hot?"（聚焦）":""}</b>　${hot?`<b>${l[2]}</b>`:l[2]}`;}).join("<br>");
+  }
+  return `<div class="tmean">
+  <div class="tt">${posLabel?posLabel+"・":""}${t.name} <span style="color:var(--ink2);font-size:.8em">${t.en}</span><span class="rv">${rev?"逆位":"正位"}</span></div>
+  <div class="tk">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+  <div class="dsec"><b>一・這張牌的主題</b><p class="modern" style="margin-top:2px">${d.th}。${rev?t.rev:t.up}</p></div>
+  <div class="dsec"><b>二・你現在可能的狀態</b><p class="modern" style="margin-top:2px">${rev?d.rs:d.st}</p></div>
+  <div class="dsec"><b>三・牌面提醒</b><p class="modern" style="margin-top:2px">${d.re}</p></div>
+  <div class="dsec"><b>四・具體建議</b><p class="modern" style="margin-top:2px">${d.ac.map(a=>"・"+a).join("<br>")}</p></div>
+  ${facets?`<details style="margin:8px 0"><summary style="padding:8px 12px;font-size:.88em">四個面向：感情・事業・財務・成長</summary><div><p class="modern" style="font-size:.9em">${facets}</p></div></details>`:""}
+  <div class="scard" style="margin:10px 0 4px"><div class="scl">${d.bl}</div><div class="scn">五・一句祝福　${t.g}</div></div>
+  </div>`;
+}
 function showTResult(){
   if(!tDrawn)return;
   const labels=spreadLabels(tDrawn.spread);
-  let html=`<div class="card"><h2>牌義</h2>`;
-  tDrawn.cards.forEach((c,i)=>{html+=tMeanHtml(c.id,c.rev,labels.length>1?labels[i]:"");});
+  let html=`<div class="card"><h2>解讀</h2>`;
+  html+=spreadAnalysis(tDrawn.cards);
+  tDrawn.cards.forEach((c,i)=>{html+=tReadingHtml(c.id,c.rev,labels.length>1?labels[i]:"",tDrawn.focus);});
   html+=`<button class="ghost" id="tSaveBtn">儲存此次占卜</button>
   <button class="ghost" id="tToYi" style="margin-left:8px">用易經占同一問題</button></div>`;
   $("#tResult").innerHTML=html;
@@ -1176,6 +1298,71 @@ function showTResult(){
   $("#tResult").scrollIntoView({behavior:"smooth"});
 }
 
+/* ---- 生命牌與年度牌 ---- */
+function digitSum(n){return String(n).split("").reduce((a,b)=>a+ +b,0);}
+function reduce22(n){while(n>22)n=digitSum(n);return n===22?0:n;}
+function renderLife(){
+  const box=$("#lifeCard");if(!box||!window.TAROT)return;
+  const birth=localStorage.getItem("yj_birth");
+  if(!birth){
+    box.innerHTML=`<h2>生命牌・年度牌</h2>
+    <p class="modern" style="margin-bottom:8px">以生日數字推算你的本命大牌（一生的核心課題）與今年的年度大牌（流年功課）。生日只存在你的瀏覽器裡。</p>
+    <div style="display:flex;gap:8px"><input type="date" id="birthIn" style="flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:9px 12px;font-family:inherit">
+    <button class="ghost" id="birthBtn" style="margin-top:0">推算</button></div>`;
+    $("#birthBtn").onclick=()=>{
+      const v=$("#birthIn").value;if(!v){alert("請選擇生日");return;}
+      localStorage.setItem("yj_birth",v);renderLife();
+    };
+    return;
+  }
+  const[y,m,d]=birth.split("-").map(Number);
+  const life=reduce22(digitSum(y)+digitSum(m)+digitSum(d));
+  const nowY=new Date().getFullYear();
+  const year=reduce22(digitSum(m)+digitSum(d)+digitSum(nowY));
+  const lt=window.TAROT[life],yt=window.TAROT[year];
+  const cell=(t,label,extra)=>`<div style="flex:1;min-width:150px;text-align:center">
+    <div style="width:84px;margin:0 auto;border-radius:8px;overflow:hidden;cursor:pointer" onclick="openTCard(${t.id})">${cardFrontSVG(t,false)}</div>
+    <div style="font-size:.78em;color:var(--ink2);margin-top:6px">${label}</div>
+    <div style="font-weight:700;letter-spacing:.1em">${t.name}</div>
+    <div class="modern" style="font-size:.85em">${extra}</div></div>`;
+  box.innerHTML=`<h2>生命牌・年度牌</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap">
+  ${cell(lt,"生命牌・一生的核心課題",lt.g)}
+  ${cell(yt,nowY+" 年度牌・今年的功課",yt.g)}
+  </div>
+  <button class="ghost" id="birthReset" style="font-size:.78em">重設生日</button>`;
+  $("#birthReset").onclick=()=>{localStorage.removeItem("yj_birth");renderLife();};
+}
+renderLife();
+
+/* ---- 占卜統計 ---- */
+function renderTStats(){
+  const box=$("#tStats");if(!box)return;
+  const recs=getTRecs();
+  if(recs.length<3){box.innerHTML=`<div class="guide" style="margin-top:0"><b>常駐能量</b>　累積三次以上紀錄後，這裡會統計你最常抽到的牌與元素傾向。</div>`;return;}
+  const cnt={},suits={major:0,wands:0,cups:0,swords:0,pentacles:0};
+  let total=0,revs=0;
+  recs.forEach(r=>r.cards.forEach(c=>{
+    total++;if(c.rev)revs++;
+    cnt[c.id]=(cnt[c.id]||0)+1;
+    suits[window.TAROT[c.id].arc]++;
+  }));
+  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const bar=(label,c)=>{
+    const pct=Math.round(c/total*100);
+    return `<div style="display:flex;align-items:center;gap:8px;margin:4px 0;font-size:.85em">
+    <span style="width:84px;color:var(--ink2)">${label}</span>
+    <div style="flex:1;background:var(--bg2);border-radius:6px;height:10px"><div style="width:${pct}%;background:var(--accent);height:10px;border-radius:6px"></div></div>
+    <span style="width:38px;text-align:right;color:var(--ink2)">${pct}%</span></div>`;
+  };
+  box.innerHTML=`<div class="card" style="background:var(--bg)">
+  <h2 style="font-size:1em">常駐能量（${recs.length} 次占卜・${total} 張牌）</h2>
+  <p class="modern" style="font-size:.88em">最常出現：${top.map(([id,c])=>`<b style="color:var(--accent)">${window.TAROT[id].name}</b>×${c}`).join("、")}</p>
+  ${bar("大阿爾克那",suits.major)}${bar("權杖・火",suits.wands)}${bar("聖杯・水",suits.cups)}${bar("寶劍・風",suits.swords)}${bar("錢幣・土",suits.pentacles)}
+  <p class="modern" style="font-size:.85em;margin-top:6px">逆位比例 ${Math.round(revs/total*100)}%${revs/total>0.5?"——最近的功課偏向內在，記得溫柔對待自己。":""}</p>
+  </div>`;
+}
+
 /* ---- 牌庫 ---- */
 function renderDeck(filter){
   $("#deckGrid").innerHTML=window.TAROT.filter(t=>filter==="all"||t.arc===filter)
@@ -1190,23 +1377,24 @@ $("#suitBar").addEventListener("click",e=>{
 function openTCard(id){
   const t=window.TAROT[id];
   const e=window.TAROT_EXT&&window.TAROT_EXT[id];
-  let extHtml="";
-  if(e){
-    extHtml=`<h3 style="margin:12px 0 4px">牌面象徵</h3><p class="modern">${e.sym}</p>
-    <h3 style="margin:12px 0 4px">情境解讀</h3>
-    <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em">正位</div>
-    <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.ul}<br><b style="color:var(--accent)">事業</b>　${e.uw}<br><b style="color:var(--accent)">財務</b>　${e.um}</p></div>
-    <div class="tmean"><div class="tt" style="font-size:.92em">逆位</div>
-    <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.rl}<br><b style="color:var(--accent)">事業</b>　${e.rw}</p></div>`;
-  }
-  openSheet(`<div style="text-align:center"><div style="width:140px;margin:0 auto">${cardFrontSVG(t,false)}</div>
+  const d=window.TAROT_DEEP&&window.TAROT_DEEP[id];
+  let h=`<div style="text-align:center"><div style="width:140px;margin:0 auto">${cardFrontSVG(t,false)}</div>
   <h2 style="margin:10px 0 2px;letter-spacing:.15em">${t.name}</h2>
   <p style="color:var(--ink2);font-size:.85em">${t.en}・${SUIT[t.arc]}${ELEM[t.arc]?"・屬"+ELEM[t.arc]:""}</p>
-  <div class="kwline">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div></div>
-  <h3 style="margin:12px 0 4px">正位</h3><p class="modern">${t.up}</p>
-  <h3 style="margin:12px 0 4px">逆位</h3><p class="modern">${t.rev}</p>
-  ${extHtml}
-  <div class="scard"><div class="scl">${t.g}</div><div class="scn">靈燈句</div></div>`);
+  <div class="kwline">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+  ${d?`<p class="modern" style="font-size:.92em;color:var(--accent)">${d.th}</p>`:""}</div>`;
+  if(e)h+=`<h3 style="margin:12px 0 4px">牌面意象</h3><p class="modern">${e.sym}</p>`;
+  h+=`<h3 style="margin:12px 0 4px">正位含義</h3><p class="modern">${t.up}</p>
+  <h3 style="margin:12px 0 4px">逆位含義</h3><p class="modern">${t.rev}</p>`;
+  if(e&&d)h+=`<h3 style="margin:12px 0 4px">四個面向</h3>
+  <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em">正位</div>
+  <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.ul}<br><b style="color:var(--accent)">工作</b>　${e.uw}<br><b style="color:var(--accent)">金錢</b>　${e.um}<br><b style="color:var(--accent)">成長</b>　${d.gr}</p></div>
+  <div class="tmean"><div class="tt" style="font-size:.92em">逆位</div>
+  <p class="modern" style="font-size:.9em"><b style="color:var(--accent)">感情</b>　${e.rl}<br><b style="color:var(--accent)">工作</b>　${e.rw}</p></div>`;
+  if(d)h+=`<h3 style="margin:12px 0 4px">這張牌想提醒你的事</h3><p class="modern">${d.re}</p>
+  <h3 style="margin:12px 0 4px">適合的行動建議</h3><p class="modern">${d.ac.map(a=>"・"+a).join("<br>")}</p>`;
+  h+=`<div class="scard"><div class="sct" style="font-size:.95em">${d?d.bl:""}</div><div class="scl">${t.g}</div><div class="scn">詩意總結</div></div>`;
+  openSheet(h);
 }
 if(window.TAROT)renderDeck("all");
 
@@ -1231,7 +1419,8 @@ function renderTRecs(){
     const labels=spreadLabels(r.spread);
     let html=`<h2 style="letter-spacing:.15em;margin-bottom:4px">牌陣回顧</h2>
     <p class="modern">${r.q||"（未填問題）"}</p><p class="modern" style="font-size:.8em">${new Date(r.date).toLocaleString("zh-TW",{hour12:false})}</p>`;
-    r.cards.forEach((c,i)=>{html+=tMeanHtml(c.id,c.rev,labels.length>1?labels[i]:"");});
+    html+=spreadAnalysis(r.cards);
+    r.cards.forEach((c,i)=>{html+=tReadingHtml(c.id,c.rev,labels.length>1?labels[i]:"",r.focus);});
     openSheet(html);
   });
 }
