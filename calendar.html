@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="light" data-font="serif" data-size="m">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>靈燈日曆</title>
+<link rel="apple-touch-icon" href="lingdeng-180.png">
+<meta name="theme-color" content="#eef3ec">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef3ec; --bg2:#e2eadd; --card:#fafcf8; --line:#cfdcc8;
+  --ink:#3a423a; --ink2:#75826f; --accent:#5d7c58; --accent2:#9a7b4f;
+  --gold:#7fa07a; --hexline:#46523f; --mark:#9a7b4f;
+  --shadow:0 2px 12px rgba(90,110,80,.10);
+  --serif:'Noto Serif TC','PMingLiU',serif; --sans:'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0a120c; --bg2:#0e1a12; --card:#13241a; --line:#26412f;
+  --ink:#e0eade; --ink2:#9bb4a0; --accent:#9ec79a; --accent2:#d4c08a;
+  --gold:#b8d3a8; --hexline:#d2e6cd; --mark:#d4c08a;
+  --shadow:0 2px 14px rgba(0,0,0,.45);
+}
+[data-font="serif"] body{font-family:var(--serif)}
+[data-font="sans"] body{font-family:var(--sans)}
+[data-size="s"]{font-size:14px}[data-size="m"]{font-size:16px}[data-size="l"]{font-size:19px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);line-height:1.8;transition:background .4s,color .4s;min-height:100vh}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 1s}
+[data-theme="dark"] #stars{opacity:1}
+.star{position:absolute;background:#fff;border-radius:50%;animation:tw 3s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.15}50%{opacity:.9}}
+.wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:0 16px 70px}
+header{padding:26px 0 6px;text-align:center}
+h1{font-size:1.5em;letter-spacing:.2em;font-weight:700}
+.sub{color:var(--ink2);font-size:.85em;letter-spacing:.28em;margin-top:2px}
+.toolbar{display:flex;justify-content:center;gap:8px;margin:14px 0 4px;flex-wrap:wrap}
+.tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:5px 14px;font-size:.82em;cursor:pointer;font-family:inherit;transition:.25s;text-decoration:none;display:inline-block}
+.tbtn:hover{border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0;box-shadow:var(--shadow)}
+.card h2{font-size:1.05em;letter-spacing:.18em;margin-bottom:10px;color:var(--accent);font-weight:700}
+.modern{color:var(--ink2);font-size:.94em}
+.kw{display:inline-block;border:1px solid var(--line);border-radius:14px;padding:2px 11px;font-size:.78em;color:var(--accent);margin:2px 4px 2px 0}
+.datebar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.datebar button{border:1px solid var(--line);background:var(--bg);color:var(--ink2);border-radius:10px;width:38px;height:38px;cursor:pointer;font-size:1em;font-family:inherit}
+.datebar button:hover{border-color:var(--accent);color:var(--ink)}
+.dmain{text-align:center;flex:1}
+.dnum{font-size:1.7em;font-weight:700;letter-spacing:.1em}
+.dsub{color:var(--ink2);font-size:.88em;margin-top:2px;line-height:1.9}
+.dsub b{color:var(--accent2);font-weight:600}
+.today-link{text-align:center;margin-top:8px}
+.today-link a{color:var(--accent);font-size:.82em;cursor:pointer;text-decoration:underline}
+.hexrow{display:flex;align-items:center;gap:16px}
+.hexrow .hx{flex-shrink:0}
+.glist{margin:6px 0}
+.glist div{padding-left:1.5em;text-indent:-1.5em;margin:5px 0;color:var(--ink2);font-size:.94em}
+.glist .ok::before{content:"○ ";color:var(--accent);font-weight:700}
+.glist .no::before{content:"× ";color:var(--accent2);font-weight:700}
+.note{background:var(--bg2);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:10px 14px;margin-top:10px;font-size:.9em;color:var(--ink2)}
+.quote{text-align:center;padding:8px 0}
+.quote .qt{font-size:1.08em;letter-spacing:.1em;line-height:2.1}
+.quote .qs{color:var(--ink2);font-size:.8em;margin-top:6px}
+.scard{border:1px dashed var(--gold);border-radius:14px;padding:14px 16px;margin:10px 0;text-align:center;background:var(--bg2)}
+.sct{font-weight:700;letter-spacing:.22em;font-size:1.02em}
+.scs{font-size:.92em;margin:8px 0;text-align:left;line-height:1.95;color:var(--ink)}
+.scl{color:var(--accent2);font-size:.9em}
+.scn{color:var(--ink2);font-size:.75em;margin-top:6px}
+.doors{display:flex;gap:10px;flex-wrap:wrap}
+.door{flex:1;min-width:140px;text-align:center;border:1px solid var(--line);border-radius:14px;padding:14px 8px;background:var(--card);color:var(--ink);text-decoration:none;transition:.25s;cursor:pointer;font-family:inherit;font-size:1em}
+.door:hover{border-color:var(--accent);transform:translateY(-2px)}
+.door .dt{font-weight:700;letter-spacing:.15em}
+.door .dd{color:var(--ink2);font-size:.78em;margin-top:4px}
+details{border:1px solid var(--line);border-radius:12px;margin:10px 0;background:var(--card)}
+summary{padding:11px 16px;cursor:pointer;letter-spacing:.1em;color:var(--ink)}
+details>div{padding:0 16px 14px;font-size:.92em;color:var(--ink2)}
+footer{text-align:center;color:var(--ink2);font-size:.78em;margin-top:36px;letter-spacing:.08em;line-height:2}
+footer span{white-space:nowrap;display:inline-block}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="wrap">
+<header>
+  <h1>靈燈日曆</h1>
+  <div class="sub">今日怎麼過・每天安定一下</div>
+  <div class="toolbar">
+    <button class="tbtn" id="fontBtn">明體</button>
+    <button class="tbtn" id="sizeBtn">字級 中</button>
+    <button class="tbtn" id="themeBtn">深夜模式</button>
+    <a class="tbtn" href="index.html">靈燈易經</a>
+  </div>
+</header>
+
+<div class="card">
+  <div class="datebar">
+    <button id="prevD">‹</button>
+    <div class="dmain">
+      <div class="dnum" id="solarDate"></div>
+      <div class="dsub" id="lunarLine"></div>
+      <div class="dsub" id="ganzhiLine"></div>
+      <div class="dsub" id="termLine"></div>
+    </div>
+    <button id="nextD">›</button>
+  </div>
+  <div class="today-link" id="backToday" style="display:none"><a>回到今天</a></div>
+</div>
+
+<div class="card" id="hexCard"></div>
+<div class="card" id="yijiCard"></div>
+<div class="card"><h2>今日之光</h2><div class="quote" id="quoteBox"></div></div>
+<div class="card" id="storyCard"></div>
+
+<div class="card">
+  <h2>三道門</h2>
+  <div class="doors">
+    <a class="door" href="index.html"><div class="dt">起一卦</div><div class="dd">用易經問今天的事</div></a>
+    <a class="door" href="index.html#tarot" id="tarotDoor"><div class="dt">抽一張塔羅</div><div class="dd">換一面西方的鏡子</div></a>
+    <button class="door" id="jcAll"><div class="dt">十二建除</div><div class="dd">看懂宜忌的由來</div></button>
+  </div>
+  <div id="jcAllBox" style="display:none;margin-top:10px"></div>
+</div>
+
+<footer><span>農曆採系統曆法</span>・<span>節氣以太陽黃經推算</span>・<span>宜忌依十二建除古法白話轉譯</span>・<span>僅供生活參考</span></footer>
+</div>
+
+<script src="data.js"></script>
+<script src="hex-deep.js"></script>
+<script src="cards.js"></script>
+<script src="caldata.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const root=document.documentElement;
+/* 主題字體（與主站共用設定） */
+const pref=localStorage.getItem("yj_theme")||((window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");
+function setTheme(t){root.dataset.theme=t;localStorage.setItem("yj_theme",t);$("#themeBtn").textContent=t==="dark"?"日間模式":"深夜模式";if(t==="dark")makeStars();}
+setTheme(pref);
+$("#themeBtn").onclick=()=>setTheme(root.dataset.theme==="dark"?"light":"dark");
+root.dataset.font=localStorage.getItem("yj_font")||"serif";
+$("#fontBtn").textContent=root.dataset.font==="serif"?"明體":"黑體";
+$("#fontBtn").onclick=()=>{root.dataset.font=root.dataset.font==="serif"?"sans":"serif";localStorage.setItem("yj_font",root.dataset.font);$("#fontBtn").textContent=root.dataset.font==="serif"?"明體":"黑體";};
+const sizes=["s","m","l"],sizeNames={s:"小",m:"中",l:"大"};
+root.dataset.size=localStorage.getItem("yj_size")||"m";
+$("#sizeBtn").textContent="字級 "+sizeNames[root.dataset.size];
+$("#sizeBtn").onclick=()=>{const i=(sizes.indexOf(root.dataset.size)+1)%3;root.dataset.size=sizes[i];localStorage.setItem("yj_size",sizes[i]);$("#sizeBtn").textContent="字級 "+sizeNames[sizes[i]];};
+function makeStars(){
+  const box=$("#stars");box.innerHTML="";
+  for(let i=0;i<100;i++){const s=document.createElement("div");s.className="star";
+    const sz=Math.random()*2+0.6;
+    s.style.cssText=`left:${Math.random()*innerWidth}px;top:${Math.random()*innerHeight}px;width:${sz}px;height:${sz}px;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*4}s`;
+    box.appendChild(s);}
+}
+addEventListener("resize",()=>{if(root.dataset.theme==="dark")makeStars();});
+
+/* ---------- 卦象 SVG（迷你） ---------- */
+const TRI={"乾":[1,1,1],"兌":[1,1,0],"離":[1,0,1],"震":[1,0,0],"巽":[0,1,1],"坎":[0,1,0],"艮":[0,0,1],"坤":[0,0,0]};
+const H=window.HEXAGRAMS;H.forEach(h=>h.arr=[...TRI[h.trig[0]],...TRI[h.trig[1]]]);
+function miniHex(arr,size){
+  size=size||72;const lh=size/12,gap=size/9,w=size,startY=size*1.08;
+  let s=`<svg viewBox="0 0 ${w} ${size*1.2}" width="${w}">`;
+  for(let i=0;i<6;i++){const y=startY-i*(lh+gap);
+    if(arr[i]===1)s+=`<rect x="3" y="${y-lh}" width="${w-6}" height="${lh}" rx="2" fill="var(--hexline)"/>`;
+    else{const seg=(w-6-w*0.16)/2;s+=`<rect x="3" y="${y-lh}" width="${seg}" height="${lh}" rx="2" fill="var(--hexline)"/><rect x="${3+seg+w*0.16}" y="${y-lh}" width="${seg}" height="${lh}" rx="2" fill="var(--hexline)"/>`;}}
+  return s+"</svg>";
+}
+
+/* ---------- 曆法計算 ---------- */
+const STEMS="甲乙丙丁戊己庚辛壬癸",BRANCHES="子丑寅卯辰巳午未申酉戌亥";
+const ZODIAC="鼠牛虎兔龍蛇馬羊猴雞狗豬";
+const TERMS=["春分","清明","穀雨","立夏","小滿","芒種","夏至","小暑","大暑","立秋","處暑","白露","秋分","寒露","霜降","立冬","小雪","大雪","冬至","小寒","大寒","立春","雨水","驚蟄"];
+function jdn(d){ // 當地正午的儒略日
+  const y=d.getFullYear(),m=d.getMonth()+1,day=d.getDate();
+  const a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;
+  return day+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;
+}
+function dayGanzhi(d){const i=(jdn(d)+49)%60;return STEMS[i%10]+BRANCHES[i%12];}
+function dayBranchIdx(d){return (jdn(d)+49)%12;}
+/* 太陽視黃經（Meeus 簡式，誤差遠小於一日） */
+function sunLong(d){
+  const jd=jdn(d)-0.5+ (d.getHours()+d.getMinutes()/60)/24 - d.getTimezoneOffset()/1440;
+  const T=(jd-2451545)/36525;
+  const L0=280.46646+36000.76983*T+0.0003032*T*T;
+  const M=(357.52911+35999.05029*T-0.0001537*T*T)*Math.PI/180;
+  const C=(1.914602-0.004817*T)*Math.sin(M)+(0.019993-0.000101*T)*Math.sin(2*M)+0.000289*Math.sin(3*M);
+  return ((L0+C-0.00569)%360+360)%360;
+}
+function termIndex(d){return Math.floor(sunLong(d)/15)%24;} // 0=春分後
+function currentTermInfo(d){
+  const ti=termIndex(d);
+  let start=new Date(d);
+  for(let i=0;i<17;i++){const p=new Date(start);p.setDate(p.getDate()-1);if(termIndex(p)!==ti)break;start=p;}
+  let next=new Date(d);
+  for(let i=0;i<17;i++){next.setDate(next.getDate()+1);if(termIndex(next)!==ti)break;}
+  const dayN=Math.round((d-start)/86400000)+1;
+  return{name:TERMS[ti],dayN,next:TERMS[(ti+1)%24],nextDate:next};
+}
+function monthBranchIdx(d){ // 寅月自立春（黃經315°）
+  return (Math.floor((((sunLong(d)-315)%360)+360)%360/30)+2)%12;
+}
+function yearGanzhi(d){
+  let y=d.getFullYear();
+  const lon=sunLong(d),m=d.getMonth()+1;
+  if(m<=3&&lon>=240&&lon<315)y-=1; // 立春前屬前一年
+  return STEMS[(y-4)%10]+BRANCHES[(y-4)%12];
+}
+function monthGanzhi(d){
+  const mb=monthBranchIdx(d);
+  const yStem=((()=>{let y=d.getFullYear();const lon=sunLong(d),m=d.getMonth()+1;if(m<=3&&lon>=240&&lon<315)y-=1;return (y-4)%10;})());
+  const monthOrder=(mb-2+12)%12; // 寅=0
+  const mStem=(yStem%5)*2+2+monthOrder; // 五虎遁
+  return STEMS[mStem%10]+BRANCHES[mb];
+}
+function chongSha(d){
+  const b=dayBranchIdx(d);
+  const chong=(b+6)%12;
+  const SHA={0:"南",4:"南",8:"南",2:"北",6:"北",10:"北",5:"東",9:"東",1:"東",11:"西",3:"西",7:"西"};
+  return{zodiac:ZODIAC[chong],branch:BRANCHES[chong],sha:SHA[b]};
+}
+const JCNAMES=["建","除","滿","平","定","執","破","危","成","收","開","閉"];
+function jianchu(d){return JCNAMES[(dayBranchIdx(d)-monthBranchIdx(d)+12)%12];}
+const NUMCN=["初一","初二","初三","初四","初五","初六","初七","初八","初九","初十","十一","十二","十三","十四","十五","十六","十七","十八","十九","二十","廿一","廿二","廿三","廿四","廿五","廿六","廿七","廿八","廿九","三十"];
+function lunarDate(d){
+  try{
+    const f=new Intl.DateTimeFormat("zh-Hant-u-ca-chinese",{month:"long",day:"numeric"});
+    const parts=f.formatToParts(d);
+    const month=(parts.find(p=>p.type==="month")||{}).value||"";
+    const day=+((parts.find(p=>p.type==="day")||{}).value||0);
+    return month+(NUMCN[day-1]||day);
+  }catch(e){return"";}
+}
+function seedOf(d){
+  const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+  let x=s;x=Math.imul(x^(x>>>15),2246822519);x=Math.imul(x^(x>>>13),3266489917);return(x^(x>>>16))>>>0;
+}
+
+/* ---------- 渲染 ---------- */
+let cur=new Date();
+function render(){
+  const d=cur,now=new Date();
+  const isToday=d.toDateString()===now.toDateString();
+  $("#backToday").style.display=isToday?"none":"block";
+  const wk="日一二三四五六"[d.getDay()];
+  $("#solarDate").textContent=`${d.getFullYear()} / ${String(d.getMonth()+1).padStart(2,"0")} / ${String(d.getDate()).padStart(2,"0")}`;
+  const ld=lunarDate(d);
+  $("#lunarLine").innerHTML=`農曆 <b>${ld||"—"}</b>　星期${wk}`;
+  $("#ganzhiLine").innerHTML=`${yearGanzhi(d)}年　${monthGanzhi(d)}月　<b>${dayGanzhi(d)}日</b>`;
+  const t=currentTermInfo(d),cs=chongSha(d);
+  $("#termLine").innerHTML=`${t.name}・第${t.dayN}天（${t.next} ${t.nextDate.getMonth()+1}/${t.nextDate.getDate()}）　沖${cs.zodiac}（${cs.branch}）煞${cs.sha}`;
+  /* 今日卦象 */
+  const hx=H[seedOf(d)%64],D=window.HEX_DEEP[hx.id];
+  $("#hexCard").innerHTML=`<h2>今日卦象</h2>
+  <div class="hexrow"><div class="hx">${miniHex(hx.arr)}</div>
+  <div style="flex:1"><div style="font-weight:700;letter-spacing:.12em;font-size:1.1em">${hx.full}</div>
+  <p class="modern" style="margin:4px 0">${D?D.th:hx.guaB}。</p>
+  <div>${hx.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div></div></div>
+  ${D?`<div class="note"><b style="color:var(--accent2)">今日提醒</b>　${D.re}</div>`:""}
+  ${D?`<div class="scard" style="margin-top:10px"><div class="scl">${D.bl}</div><div class="scn">今日靈燈句</div></div>`:""}`;
+  /* 宜忌（建除） */
+  const jc=jianchu(d),J=window.JIANCHU[jc];
+  $("#yijiCard").innerHTML=`<h2>今日宜忌</h2>
+  <p class="modern">${dayGanzhi(d)}日・<b style="color:var(--accent2)">${jc}日</b>——${J.m}</p>
+  <p style="margin-top:8px;font-weight:700;letter-spacing:.1em">今日適合</p>
+  <div class="glist">${J.good.map(g=>`<div class="ok">${g}</div>`).join("")}</div>
+  <p style="margin-top:8px;font-weight:700;letter-spacing:.1em">今日不建議</p>
+  <div class="glist">${J.bad.map(g=>`<div class="no">${g}</div>`).join("")}</div>
+  <div class="note">${J.note}</div>`;
+  /* 每日一句 */
+  const q=window.CAL_QUOTES[seedOf(d)%window.CAL_QUOTES.length];
+  $("#quoteBox").innerHTML=`<div class="qt">${q.q}</div><div class="qs">——${q.s}</div>`;
+  /* 今日故事：384爻卡輪播 */
+  const allCards=[];
+  Object.keys(window.CARDS).forEach(hid=>{window.CARDS[hid].forEach((c,i)=>allCards.push({hid:+hid,i,c}));});
+  const pick=allCards[seedOf(d)%allCards.length];
+  const ph=H[pick.hid-1],pl=ph.lines[pick.i];
+  $("#storyCard").innerHTML=`<h2>今日故事</h2>
+  <div class="scard"><div class="sct">《${pick.c.t}》</div><div class="scs">${pick.c.s}</div>
+  <div class="scl">${pick.c.l}</div><div class="scn">${ph.name}卦・${pl.n}　${pl.t}</div></div>`;
+}
+$("#prevD").onclick=()=>{cur.setDate(cur.getDate()-1);render();};
+$("#nextD").onclick=()=>{cur.setDate(cur.getDate()+1);render();};
+$("#backToday").onclick=()=>{cur=new Date();render();};
+$("#jcAll").onclick=()=>{
+  const box=$("#jcAllBox");
+  if(box.style.display==="none"){
+    box.style.display="block";
+    box.innerHTML=JCNAMES.map(n=>{const J=window.JIANCHU[n];
+      return `<details><summary>${n}日——${J.m}</summary><div>
+      適合：${J.good.join("、")}<br>不建議：${J.bad.join("、")}<br><br>${J.note}</div></details>`;}).join("")+
+      `<p class="modern" style="font-size:.82em;margin-top:8px">十二建除是傳統擇日的基礎：依月建與日支的關係，每日輪值一神。本曆將古籍宜忌轉譯為現代生活語言，供參考而非教條。</p>`;
+  }else box.style.display="none";
+};
+if(localStorage.getItem("yj_tarot_unlocked")!=="1")$("#tarotDoor").href="index.html";
+render();
+</script>
+</body>
+</html>
