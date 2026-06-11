@@ -590,6 +590,7 @@ details>div{overflow-x:auto}
 <div class="overlay" id="overlay"><div class="sheet" id="sheet"></div></div>
 
 <script src="data.js"></script>
+<script src="hex-deep.js"></script>
 <script src="cards.js"></script>
 <script src="learn.js"></script>
 <script src="tarot.js"></script>
@@ -892,6 +893,27 @@ function yaoList(h,r,hotIdx,mainIdx,isBase){
   });
   return out+"</div>";
 }
+function yiReadingHtml(r){
+  const D=window.HEX_DEEP&&window.HEX_DEEP[r.base.id];
+  if(!D)return"";
+  const hasChg=r.chgIdx.length>0;
+  let turn="";
+  if(hasChg){
+    const mainIdx=r.chgIdx.length===1?r.chgIdx[0]:r.chgIdx[r.chgIdx.length-1];
+    const ln=r.base.lines[mainIdx];
+    const D2=window.HEX_DEEP&&window.HEX_DEEP[r.changed.id];
+    turn=`<div class="dsec"><b>四・轉折與趨勢</b><p class="modern" style="margin-top:2px">關鍵在${ln.n}：${ln.b}${ln.a?`（${ln.a}）`:""}<br>趨勢走向《${r.changed.name}》${D2?`——${D2.th}`:""}。</p></div>`;
+  }
+  return `<div class="card"><h2>白話解讀</h2>
+  <div class="dsec"><b>一・這一卦的主題</b><p class="modern" style="margin-top:2px">${D.th}。</p></div>
+  <div class="dsec"><b>二・你現在可能的狀態</b><p class="modern" style="margin-top:2px">${D.st}</p></div>
+  <div class="dsec"><b>三・卦象提醒</b><p class="modern" style="margin-top:2px">${D.re}</p></div>
+  ${turn}
+  <div class="dsec"><b>${hasChg?"五":"四"}・具體建議</b><div class="modern blist" style="margin-top:2px">${D.ac.map(a=>`<div>・${a}</div>`).join("")}</div></div>
+  <div class="scard" style="margin:10px 0 4px"><div class="scl">${D.bl}</div><div class="scn">${hasChg?"六":"五"}・一句祝福</div></div>
+  <p class="modern" style="font-size:.8em;text-align:center">完整卦辭、爻辭與原文解讀在下方，邊占邊學。</p>
+  </div>`;
+}
 function renderResult(r,q,date,allowSave){
   const rule=ruleText(r),hot=rule.hot;
   const marks=marksOf(r);
@@ -906,6 +928,7 @@ function renderResult(r,q,date,allowSave){
   <div class="guide"><b>解卦指引</b>　${rule.txt}<br><span style="font-size:.85em;color:var(--ink2)">變爻 ${r.chgIdx.length} 個${hasChg?"："+r.chgIdx.map(i=>r.base.lines[i].n).join("、"):""}（規則出自朱熹《易學啟蒙》）</span></div>
   ${allowSave?'<button class="ghost" id="saveBtn">儲存此次占卜</button>':""}
   </div>`;
+  html+=yiReadingHtml(r);
   html+=storyCards(r,hot);
   html+=guaCard(r.base,hot.gua==="base"||hot.gua==="both","本卦");
   html+=`<div class="card"><h2>本卦的三面鏡</h2>${relHtml(r.base)}</div>`;
@@ -960,9 +983,16 @@ renderLib();
 $("#search").addEventListener("input",e=>renderLib(e.target.value.trim()));
 function openHexDetail(id){
   const h=H[id-1];
+  const D=window.HEX_DEEP&&window.HEX_DEEP[id];
   let html=`<div style="text-align:center">${svgHex(h.arr)}<h2 style="margin:8px 0 2px;letter-spacing:.15em">第${h.id}卦・${h.full}</h2>
   <p style="color:var(--ink2);font-size:.85em">上${h.trig[1]}（${TRINAT[h.trig[1]]}）下${h.trig[0]}（${TRINAT[h.trig[0]]}）</p>
-  <div class="kwline">${h.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div></div>
+  <div class="kwline">${h.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
+  ${D?`<p class="modern" style="font-size:.92em;color:var(--accent)">${D.th}</p>`:""}</div>`;
+  if(D)html+=`<h3 style="margin:12px 0 4px">你現在可能的狀態</h3><p class="modern">${D.st}</p>
+  <h3 style="margin:12px 0 4px">卦象提醒</h3><p class="modern">${D.re}</p>
+  <h3 style="margin:12px 0 4px">適合的行動</h3><div class="modern blist">${D.ac.map(a=>`<div>・${a}</div>`).join("")}</div>
+  <div class="scard"><div class="scl">${D.bl}</div><div class="scn">一句祝福</div></div>`;
+  html+=`
   <h3 style="margin:14px 0 4px">卦辭</h3><p class="orig">${h.gua}</p><p class="modern">${h.guaB}</p>
   <h3 style="margin:12px 0 4px">大象傳</h3><p class="orig" style="font-size:.95em">${h.xiang}</p><p class="modern">${h.xiangB}</p>
   <h3 style="margin:12px 0 4px">解讀</h3><p class="modern">${h.read}</p>
