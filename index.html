@@ -126,7 +126,8 @@ details td,details th{border:1px solid var(--line);padding:6px 8px;text-align:ce
 .rec .del{float:right;border:none;background:none;color:var(--ink2);cursor:pointer;font-size:.85em;padding:2px 6px}
 .rec .del:hover{color:var(--accent2)}
 .empty{text-align:center;color:var(--ink2);padding:30px 0;font-size:.92em}
-footer{text-align:center;color:var(--ink2);font-size:.78em;margin-top:40px;letter-spacing:.08em}
+footer{text-align:center;color:var(--ink2);font-size:.78em;margin-top:40px;letter-spacing:.08em;line-height:2}
+footer span{white-space:nowrap;display:inline-block}
 .motto{margin:14px auto 0;color:var(--ink2);font-size:.92em;letter-spacing:.14em;line-height:2}
 .rels{display:flex;gap:10px;text-align:center;flex-wrap:wrap}
 .rel{flex:1;min-width:90px;cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:10px 4px;transition:.2s;background:var(--bg)}
@@ -223,6 +224,7 @@ details>div{overflow-x:auto}
     <button class="tbtn" id="fontBtn">明體</button>
     <button class="tbtn" id="sizeBtn">字級 中</button>
     <button class="tbtn" id="themeBtn">深夜模式</button>
+    <a class="tbtn" href="calendar.html" style="text-decoration:none;display:inline-block">日曆</a>
   </div>
 </header>
 
@@ -418,7 +420,7 @@ details>div{overflow-x:auto}
   </div>
 </section>
 
-<footer>原文採《周易》通行本・解讀為本站白話撰寫・僅供修身參考</footer>
+<footer><span>原文採《周易》通行本</span>・<span>解讀為本站白話撰寫</span>・<span>僅供修身參考</span></footer>
 </div><!-- /yiRoot -->
 
 <div id="taroRoot">
@@ -583,7 +585,7 @@ details>div{overflow-x:auto}
   </div>
 </section>
 
-<footer>牌義為本站原創撰寫・參考偉特塔羅傳統・僅供自省參考</footer>
+<footer><span>牌義為本站原創撰寫</span>・<span>參考偉特塔羅傳統</span>・<span>僅供自省參考</span></footer>
 </div><!-- /taroRoot -->
 </div><!-- /wrap -->
 
@@ -1085,10 +1087,11 @@ document.querySelector("header h1").addEventListener("click",()=>{
   if(root.dataset.mode==="tarot"){setMode("yi");return;}
   const pw=prompt("此門深鎖。請說出通關密語：");
   if(pw===null)return;
-  if(pw.trim()==="Khalil")setMode("tarot");
+  if(pw.trim()==="Khalil"){localStorage.setItem("yj_tarot_unlocked","1");setMode("tarot");}
   else alert("門紋絲不動。（提示：九又四分之三月台的票根上寫著一個名字）");
 });
 if(localStorage.getItem("yj_mode")==="tarot")setMode("tarot");
+if(location.hash==="#tarot"&&localStorage.getItem("yj_tarot_unlocked")==="1")setMode("tarot");
 
 /* ---- 塔羅分頁 ---- */
 document.querySelectorAll("#taroRoot nav button").forEach(b=>b.onclick=()=>{
