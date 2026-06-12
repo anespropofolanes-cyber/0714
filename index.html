@@ -225,7 +225,7 @@ details>div{overflow-x:auto}
     <button class="tbtn" id="fontBtn">明體</button>
     <button class="tbtn" id="sizeBtn">字級 中</button>
     <button class="tbtn" id="themeBtn">深夜模式</button>
-    <a class="tbtn" href="calendar.html" style="text-decoration:none;display:inline-block">日曆</a>
+    <a class="tbtn" href="calendar.html" style="text-decoration:none;display:inline-block" onclick="location.href='./calendar.html?r='+Date.now();return false;">日曆</a>
   </div>
 </header>
 
@@ -845,7 +845,7 @@ function relHtml(h){
   const hu=MAP[[a[1],a[2],a[3],a[2],a[3],a[4]].join("")];
   const cuo=MAP[a.map(b=>1-b).join("")];
   const zong=MAP[[...a].slice().reverse().join("")];
-  const item=(n,x,dsc)=>`<div class="rel" data-id="${x.id}">${miniHex(x.arr)}<div class="rn">${n}・${x.name}</div><div class="rf">${x.full}</div><div class="rd2">${dsc}</div></div>`;
+  const item=(n,x,dsc)=>`<div class="rel" data-id="${x.id}">${miniHex(x.arr)}<div class="rn">${n}・${x.name}</div><div class="rf">第${x.id}卦・${x.full}</div><div class="rd2">${dsc}</div></div>`;
   return `<div class="rels">${item("互卦",hu,"內在的發展過程")}${item("錯卦",cuo,"相反立場的視角")}${item("綜卦",zong,"對方眼中的局面")}</div>`;
 }
 document.addEventListener("click",e=>{const r=e.target.closest(".rel");if(r)openHexDetail(+r.dataset.id);});
@@ -877,7 +877,7 @@ function startResult(vals){
 }
 function marksOf(r){const m=[null,null,null,null,null,null];r.chgIdx.forEach(i=>m[i]=VAL[r.vals[i]].mark);return m;}
 function guaCard(h,hot,label){
-  return `<div class="card"><h2>${label}《${h.name}》${h.full}</h2>
+  return `<div class="card"><h2>${label}《${h.name}》${h.full}<span style="font-size:.78em;color:var(--ink2);font-weight:400">　第${h.id}卦</span></h2>
   <div class="kwline">${h.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
   <div class="${hot?"guide":""}" style="${hot?"":""}">
   <p class="orig">${h.gua}</p><p class="modern">${h.guaB}</p></div>
@@ -905,7 +905,7 @@ function yiReadingHtml(r){
     const mainIdx=r.chgIdx.length===1?r.chgIdx[0]:r.chgIdx[r.chgIdx.length-1];
     const ln=r.base.lines[mainIdx];
     const D2=window.HEX_DEEP&&window.HEX_DEEP[r.changed.id];
-    turn=`<div class="dsec"><b>四・轉折與趨勢</b><p class="modern" style="margin-top:2px">關鍵在${ln.n}：${ln.b}${ln.a?`（${ln.a}）`:""}<br>趨勢走向《${r.changed.name}》${D2?`——${D2.th}`:""}。</p></div>`;
+    turn=`<div class="dsec"><b>四・轉折與趨勢</b><p class="modern" style="margin-top:2px">關鍵在${ln.n}：${ln.b}${ln.a?`（${ln.a}）`:""}<br>趨勢走向《${r.changed.name}》（第${r.changed.id}卦）${D2?`——${D2.th}`:""}。</p></div>`;
   }
   return `<div class="card"><h2>白話解讀</h2>
   <div class="dsec"><b>一・這一卦的主題</b><p class="modern" style="margin-top:2px">${D.th}。</p></div>
@@ -925,8 +925,8 @@ function renderResult(r,q,date,allowSave){
   let html=`<div class="card"><h2>卦象</h2>
   ${q?`<p class="modern">所問：${q}</p>`:""}<p class="modern" style="font-size:.8em">起卦時間：${dstr}</p>
   <div class="result-head">
-    <div class="hexbox">${svgHex(r.baseArr,marks)}<div class="nm">本卦・${r.base.name}</div><div class="fl">${r.base.full}</div></div>
-    ${hasChg?`<div class="arrow">→</div><div class="hexbox">${svgHex(r.chArr)}<div class="nm">之卦・${r.changed.name}</div><div class="fl">${r.changed.full}</div></div>`:""}
+    <div class="hexbox">${svgHex(r.baseArr,marks)}<div class="nm">本卦・${r.base.name}</div><div class="fl">第${r.base.id}卦・${r.base.full}</div></div>
+    ${hasChg?`<div class="arrow">→</div><div class="hexbox">${svgHex(r.chArr)}<div class="nm">之卦・${r.changed.name}</div><div class="fl">第${r.changed.id}卦・${r.changed.full}</div></div>`:""}
   </div>
   <div class="guide"><b>解卦指引</b>　${rule.txt}<br><span style="font-size:.85em;color:var(--ink2)">變爻 ${r.chgIdx.length} 個${hasChg?"："+r.chgIdx.map(i=>r.base.lines[i].n).join("、"):""}（規則出自朱熹《易學啟蒙》）</span></div>
   ${allowSave?'<button class="ghost" id="saveBtn">儲存此次占卜</button>':""}
@@ -1108,7 +1108,7 @@ function comboBoxes(r,card){
   const marks=marksOf(r),hasChg=r.chgIdx.length>0,rule=ruleText(r),t=window.TAROT[card.id];
   return `<div class="combo">
   <div class="cbox">${svgHex(r.baseArr,marks,96)}
-    <div class="nm">本卦・${r.base.full}${hasChg?`<span style="color:var(--ink2);font-size:.8em">　→　${r.changed.name}</span>`:""}</div>
+    <div class="nm">本卦・${r.base.full}<span style="color:var(--ink2);font-size:.75em">（第${r.base.id}卦）</span>${hasChg?`<span style="color:var(--ink2);font-size:.8em">　→　${r.changed.name}</span>`:""}</div>
     <div class="kwline">${r.base.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
     <p class="modern" style="text-align:left">${r.base.read}</p>
     <p class="modern" style="text-align:left;font-size:.85em">${rule.txt}</p>
