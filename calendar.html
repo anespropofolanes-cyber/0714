@@ -112,7 +112,7 @@ footer span{white-space:nowrap;display:inline-block}
     <button class="tbtn" id="fontBtn">明體</button>
     <button class="tbtn" id="sizeBtn">字級 中</button>
     <button class="tbtn" id="themeBtn">深夜模式</button>
-    <a class="tbtn" href="./index.html" onclick="location.href='./index.html';return false;">靈燈易經</a>
+    <a class="tbtn" href="./index.html" onclick="location.href='./index.html?r='+Date.now();return false;">靈燈易經</a>
   </div>
 </header>
 
@@ -155,7 +155,7 @@ footer span{white-space:nowrap;display:inline-block}
 <div class="card">
   <h2>三道門</h2>
   <div class="doors">
-    <a class="door" href="index.html"><div class="dt">起一卦</div><div class="dd">用易經問今天的事</div></a>
+    <a class="door" href="index.html" onclick="location.href='./index.html?r='+Date.now();return false;"><div class="dt">起一卦</div><div class="dd">用易經問今天的事</div></a>
     <a class="door" href="index.html#tarot" id="tarotDoor"><div class="dt">抽一張塔羅</div><div class="dd">換一面西方的鏡子</div></a>
     <button class="door" id="jcAll"><div class="dt">十二建除</div><div class="dd">看懂宜忌的由來</div></button>
   </div>
@@ -291,7 +291,7 @@ function render(){
   const hx=H[seedOf(d)%64],D=window.HEX_DEEP&&window.HEX_DEEP[hx.id];
   $("#hexCard").innerHTML=`<h2>今日卦象</h2>
   <div class="hexrow"><div class="hx">${miniHex(hx.arr)}</div>
-  <div style="flex:1"><div style="font-weight:700;letter-spacing:.12em;font-size:1.1em">${hx.full}</div>
+  <div style="flex:1"><div style="font-weight:700;letter-spacing:.12em;font-size:1.1em">${hx.full}<span style="color:var(--ink2);font-size:.72em;font-weight:400">　第${hx.id}卦</span></div>
   <p class="modern" style="margin:4px 0">${D?D.th:hx.guaB}。</p>
   <div>${hx.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div></div></div>
   ${D?`<div class="note"><b style="color:var(--accent2)">今日提醒</b>　${D.re}</div>`:""}
@@ -366,7 +366,11 @@ $("#jcAll").onclick=()=>{
       `<p class="modern" style="font-size:.82em;margin-top:8px">十二建除是傳統擇日的基礎：依月建與日支的關係，每日輪值一神。本曆將古籍宜忌轉譯為現代生活語言，供參考而非教條。</p>`;
   }else box.style.display="none";
 };
-if(localStorage.getItem("yj_tarot_unlocked")!=="1")$("#tarotDoor").href="index.html";
+$("#tarotDoor").onclick=function(){
+  const hash=localStorage.getItem("yj_tarot_unlocked")==="1"?"#tarot":"";
+  location.href="./index.html?r="+Date.now()+hash;
+  return false;
+};
 render();
 </script>
 </body>
