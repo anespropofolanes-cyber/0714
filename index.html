@@ -92,6 +92,30 @@ textarea:focus,input:focus{outline:none;border-color:var(--accent)}
 .arrow{align-self:center;color:var(--accent);font-size:1.4em;padding:0 2px}
 .guide{background:var(--bg2);border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:12px 14px;margin:16px 0;font-size:.94em}
 .guide b{color:var(--accent2)}
+.koracle{background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow);position:relative}
+.koracle .kh{font-size:1.12em;letter-spacing:.14em;color:var(--accent);font-weight:700}
+.koracle .ksub{font-size:.86em;color:var(--ink2);line-height:1.75;margin:6px 0 4px}
+.kitem{border-top:1px dashed var(--line);padding-top:14px;margin-top:14px}
+.kitem.kmain{border-top:none;padding-top:6px;margin-top:8px}
+.kwhich{font-size:.92em;color:var(--ink);background:var(--bg2);border-radius:10px;padding:8px 12px;margin:4px 0 10px;line-height:1.7}
+.kwhich b{color:var(--accent2)}
+.klabel{display:inline-block;background:var(--accent);color:var(--bg);font-size:.78em;padding:3px 12px;border-radius:20px;letter-spacing:.06em;margin-bottom:8px;font-weight:700}
+.klabel.sec{background:var(--bg2);color:var(--ink2);font-weight:500}
+.korig{font-family:var(--serif);color:var(--ink2);font-size:.92em;border-left:3px solid var(--line);padding-left:11px;margin:6px 0;line-height:1.7}
+.kmean{font-size:1.05em;line-height:1.9;margin:8px 0;color:var(--ink)}
+.kmain .kmean{font-size:1.14em}
+.kadv{color:var(--accent2);font-size:.95em;margin-top:8px;line-height:1.7}
+.kadv b{color:var(--accent2)}
+.kmore{border:1px solid var(--line);border-radius:10px;margin-top:12px;background:transparent}
+.kmore summary{padding:8px 13px;font-size:.84em;color:var(--ink2);letter-spacing:.06em;font-weight:400}
+.kmore[open] summary{border-bottom:1px dashed var(--line);margin-bottom:4px}
+.kmore .kwhich,.kmore .korig{margin:8px 13px}
+.kmore .kwhich{margin-top:10px}
+.tprow{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px dashed var(--line)}
+.tprow:first-of-type{border-top:none;padding-top:4px}
+.tpk{flex:0 0 auto;min-width:3.4em;text-align:center;background:var(--bg2);color:var(--accent);font-weight:700;border-radius:10px;padding:6px 8px;font-size:.92em;letter-spacing:.15em}
+.tpv{flex:1;margin:0;color:var(--ink);font-size:.97em;line-height:1.85}
+.tpnote{font-size:.78em;color:var(--ink2);margin-top:12px;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
 .orig{font-size:1.02em;letter-spacing:.04em;margin:6px 0;font-weight:500}
 .modern{color:var(--ink2);font-size:.93em;margin-bottom:8px}
 .kwline{margin:8px 0}
@@ -448,7 +472,7 @@ details>div{overflow-x:auto}
       <div class="mode" data-sp="ab">二擇一</div>
       <div class="mode" data-sp="celtic">凱爾特</div>
     </div>
-    <p style="color:var(--ink2);font-size:.85em;text-align:center" id="spDesc">抽一張牌，作為當下的指引</p>
+    <p style="color:var(--ink2);font-size:.85em;text-align:center;text-wrap:balance;-webkit-text-wrap:balance;max-width:30em;margin-inline:auto" id="spDesc">抽一張牌，作為當下的指引</p>
     <div class="suitbar" id="focusBar" style="justify-content:center;margin-top:8px">
       <button class="suitbtn on" data-f="all">整體</button>
       <button class="suitbtn" data-f="love">聚焦感情</button>
@@ -892,9 +916,59 @@ function yaoList(h,r,hotIdx,mainIdx,isBase){
     const hot=hotIdx.includes(i),main=mainIdx===i;
     const chgMark=(isBase&&r&&i<6&&r.chgIdx.includes(i))?` <span style="color:var(--mark)">${VAL[r.vals[i]].mark}</span>`:"";
     out+=`<div class="yao ${hot?"hot":""}"><div class="yt">${l.n}：${l.t}${chgMark}${main?'<span class="tag">解卦重點</span>':hot?'<span class="tag" style="background:var(--accent)">參看</span>':""}</div>
-    <div class="ya">${l.b}</div><div class="yx">${l.x}</div><div class="ya" style="color:var(--accent)">建議：${l.a}</div></div>`;
+    <div class="ya"><b style="color:var(--accent)">白話：</b>${l.b}</div><div class="yx">${l.x}</div><div class="ya" style="color:var(--accent)">建議：${l.a}</div></div>`;
   });
   return out+"</div>";
+}
+function topicHtml(D){
+  if(!D||!D.tp)return"";
+  const t=D.tp,row=(k,v)=>`<div class="tprow"><div class="tpk">${k}</div><div class="tpv">${v}</div></div>`;
+  return `<div class="card"><h2>分項提點</h2>
+  ${row("健康",t.he)}${row("事業",t.ca)}${row("子女",t.ch)}
+  <p class="tpnote">分項提點依本卦卦義而發，供自我覺察與生活參考；非醫療診斷、法律或投資建議，身體不適請諮詢專業。</p></div>`;
+}
+function keyOracleHtml(r,rule){
+  const hot=rule.hot,b=r.base,c=r.changed,n=r.chgIdx.length;
+  let items=[];
+  if(hot.gua==="base")items=[{h:b,kind:"gua",primary:true}];
+  else if(hot.gua==="changed")items=[{h:c,kind:"gua",primary:true}];
+  else if(hot.gua==="both")items=[{h:b,kind:"gua",primary:true},{h:c,kind:"gua",primary:false}];
+  else if(hot.baseLines){
+    const order=hot.main!==undefined?[hot.main,...hot.baseLines.filter(i=>i!==hot.main)]:hot.baseLines;
+    items=order.map((i,k)=>({h:b,kind:"line",idx:i,primary:k===0}));
+  }else if(hot.chLines){
+    const order=hot.main!==undefined?[hot.main,...hot.chLines.filter(i=>i!==hot.main)]:hot.chLines;
+    items=order.map((i,k)=>({h:c,kind:"line",idx:i,primary:k===0}));
+  }
+  if(!items.length)return"";
+  const single=items.length===1;
+  const blocks=items.map(it=>{
+    let label,which="",orig,mean,adv;
+    if(it.kind==="gua"){
+      label=`第${it.h.id}卦《${it.h.name}》卦辭`;
+      orig=it.h.gua;mean=it.h.guaB;adv=it.h.adv;
+      if(it.primary)which=`這次<b>沒有變爻</b>，所以不挑單獨某一爻，而是看整個「第${it.h.id}卦・${it.h.name}卦」的卦辭。下面就是這一卦想對你說的話。`;
+    }else{
+      const l=it.h.lines[it.idx],pos=it.idx<6?`六爻由下往上數的第 ${it.idx+1} 爻`:"全卦總論";
+      label=`第${it.h.id}卦《${it.h.name}》${l.n}`;
+      orig=l.t;mean=l.b;adv=l.a;
+      if(it.primary)which=`這次真正要看的是 <b>第${it.h.id}卦《${it.h.name}》${l.n}</b>（${pos}）。不用讀完六爻，先看這一段就懂。`;
+    }
+    const sys=it.primary?`<div class="kwhich">這一段是系統依占卦規則（朱熹《易學啟蒙》）為你挑出的重點；先看上方白話就懂，這裡補上原文與「為什麼看這一爻」。</div>`:"";
+    const tag=it.primary?`<span class="klabel">重點看這裡 ・ ${label}</span>`:`<span class="klabel sec">一併參看 ・ ${label}</span>`;
+    return `<div class="kitem ${it.primary?"kmain":""}">${tag}
+      <div class="kmean">${mean}</div>
+      <div class="kadv"><b>怎麼做：</b>${adv}</div>
+      <details class="kmore"><summary>原文與說明（想深入再點開）</summary>
+      ${sys}
+      ${which?`<div class="kwhich">${which}</div>`:""}
+      <div class="korig">原文：${orig}</div>
+      </details></div>`;
+  }).join("");
+  return `<div class="koracle">
+    <div class="kh">你這次卜到的籤</div>
+    ${blocks}
+  </div>`;
 }
 function yiReadingHtml(r){
   const D=window.HEX_DEEP&&window.HEX_DEEP[r.base.id];
@@ -931,7 +1005,9 @@ function renderResult(r,q,date,allowSave){
   <div class="guide"><b>解卦指引</b>　${rule.txt}<br><span style="font-size:.85em;color:var(--ink2)">變爻 ${r.chgIdx.length} 個${hasChg?"："+r.chgIdx.map(i=>r.base.lines[i].n).join("、"):""}（規則出自朱熹《易學啟蒙》）</span></div>
   ${allowSave?'<button class="ghost" id="saveBtn">儲存此次占卜</button>':""}
   </div>`;
+  html+=keyOracleHtml(r,rule);
   html+=yiReadingHtml(r);
+  html+=topicHtml(window.HEX_DEEP&&window.HEX_DEEP[r.base.id]);
   html+=storyCards(r,hot);
   html+=guaCard(r.base,hot.gua==="base"||hot.gua==="both","本卦");
   html+=`<div class="card"><h2>本卦的三面鏡</h2>${relHtml(r.base)}</div>`;
@@ -995,6 +1071,11 @@ function openHexDetail(id){
   <h3 style="margin:12px 0 4px">卦象提醒</h3><p class="modern">${D.re}</p>
   <h3 style="margin:12px 0 4px">適合的行動</h3><div class="modern blist">${D.ac.map(a=>`<div>・${a}</div>`).join("")}</div>
   <div class="scard"><div class="scl">${D.bl}</div><div class="scn">一句祝福</div></div>`;
+  if(D&&D.tp)html+=`<h3 style="margin:14px 0 6px">分項提點</h3>
+  <div class="tprow"><div class="tpk">健康</div><div class="tpv">${D.tp.he}</div></div>
+  <div class="tprow"><div class="tpk">事業</div><div class="tpv">${D.tp.ca}</div></div>
+  <div class="tprow"><div class="tpk">子女</div><div class="tpv">${D.tp.ch}</div></div>
+  <p class="tpnote">分項提點依本卦卦義而發，供自我覺察與生活參考；非醫療診斷、法律或投資建議，身體不適請諮詢專業。</p>`;
   html+=`
   <h3 style="margin:14px 0 4px">卦辭</h3><p class="orig">${h.gua}</p><p class="modern">${h.guaB}</p>
   <h3 style="margin:12px 0 4px">大象傳</h3><p class="orig" style="font-size:.95em">${h.xiang}</p><p class="modern">${h.xiangB}</p>
@@ -1199,8 +1280,12 @@ let tSpread="one",tDrawn=null;
 document.querySelectorAll(".mode[data-sp]").forEach(m=>m.onclick=()=>{
   tSpread=m.dataset.sp;
   document.querySelectorAll(".mode[data-sp]").forEach(x=>x.classList.toggle("on",x===m));
-  $("#spDesc").textContent=SPREADS[tSpread].desc;
+  setSpDesc(SPREADS[tSpread].desc);
 });
+function setSpDesc(t){
+  const safe=String(t).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  $("#spDesc").innerHTML=safe.length>2?safe.slice(0,-2)+'<span style="white-space:nowrap">'+safe.slice(-2)+"</span>":safe;
+}
 let tFocus="all";
 $("#focusBar").addEventListener("click",e=>{
   const b=e.target.closest(".suitbtn");if(!b)return;
@@ -1276,6 +1361,7 @@ function tMeanHtml(c,rev,posLabel,focus){
   let ctx="";
   if(e){
     let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
+    if(e.uh)lines.push(["health","健康",rev?e.rh:e.uh]);
     if(!rev)lines.push(["money","財務",e.um]);
     if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
     ctx=`<div style="border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">${facetRows(lines,focus)}</div>`;
@@ -1302,6 +1388,7 @@ function tReadingHtml(cid,rev,posLabel,focus){
   let facets="";
   if(e){
     let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
+    if(e.uh)lines.push(["health","健康",rev?e.rh:e.uh]);
     if(!rev)lines.push(["money","財務",e.um]);
     lines.push(["grow","成長",d.gr]);
     if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
@@ -1314,7 +1401,7 @@ function tReadingHtml(cid,rev,posLabel,focus){
   <div class="dsec"><b>二・你現在可能的狀態</b><p class="modern" style="margin-top:2px">${rev?d.rs:d.st}</p></div>
   <div class="dsec"><b>三・牌面提醒</b><p class="modern" style="margin-top:2px">${d.re}</p></div>
   <div class="dsec"><b>四・具體建議</b><div class="modern blist" style="margin-top:2px">${d.ac.map(a=>`<div>・${a}</div>`).join("")}</div></div>
-  ${facets?`<details style="margin:8px 0"><summary style="padding:8px 12px;font-size:.88em">四個面向：感情・事業・財務・成長</summary><div>${facets}</div></details>`:""}
+  ${facets?`<details style="margin:8px 0"><summary style="padding:8px 12px;font-size:.88em">五個面向：感情・事業・健康・財務・成長</summary><div>${facets}<p class="tpnote">健康面向供自我覺察參考，非醫療診斷，身體不適請諮詢專業。</p></div></details>`:""}
   <div class="scard" style="margin:10px 0 4px"><div class="scl">${d.bl}</div><div class="scn">五・一句祝福　${t.g}</div></div>
   </div>`;
 }
@@ -1428,11 +1515,12 @@ function openTCard(id){
   if(e)h+=`<h3 style="margin:12px 0 4px">牌面意象</h3><p class="modern">${e.sym}</p>`;
   h+=`<h3 style="margin:12px 0 4px">正位含義</h3><p class="modern">${t.up}</p>
   <h3 style="margin:12px 0 4px">逆位含義</h3><p class="modern">${t.rev}</p>`;
-  if(e&&d)h+=`<h3 style="margin:12px 0 4px">四個面向</h3>
+  if(e&&d)h+=`<h3 style="margin:12px 0 4px">各個面向</h3>
   <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em;margin-bottom:6px">正位</div>
-  ${facetRows([["","感情",e.ul],["","工作",e.uw],["","金錢",e.um],["","成長",d.gr]])}</div>
+  ${facetRows([["","感情",e.ul],["","工作",e.uw],["","健康",e.uh],["","金錢",e.um],["","成長",d.gr]])}</div>
   <div class="tmean"><div class="tt" style="font-size:.92em;margin-bottom:6px">逆位</div>
-  ${facetRows([["","感情",e.rl],["","工作",e.rw]])}</div>`;
+  ${facetRows([["","感情",e.rl],["","工作",e.rw],["","健康",e.rh]])}</div>
+  <p class="tpnote">健康面向供自我覺察參考，非醫療診斷，身體不適請諮詢專業。</p>`;
   if(d)h+=`<h3 style="margin:12px 0 4px">這張牌想提醒你的事</h3><p class="modern">${d.re}</p>
   <h3 style="margin:12px 0 4px">適合的行動建議</h3><div class="modern blist">${d.ac.map(a=>`<div>・${a}</div>`).join("")}</div>`;
   h+=`<div class="scard"><div class="sct" style="font-size:.95em">${d?d.bl:""}</div><div class="scl">${t.g}</div><div class="scn">詩意總結</div></div>`;
