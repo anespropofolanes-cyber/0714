@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>靈燈易經．易經占卜</title>
+<script>/* localStorage 安全防護：file:// 或無痕模式被擋時，改用記憶體暫存，避免 setMode 等中斷 */
+(function(){var ok=false;try{var k="__ls";window.localStorage.setItem(k,"1");window.localStorage.removeItem(k);ok=true;}catch(e){}
+if(!ok){var mem={};var shim={getItem:function(k){return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null;},setItem:function(k,v){mem[k]=String(v);},removeItem:function(k){delete mem[k];},clear:function(){mem={};},key:function(i){return Object.keys(mem)[i]||null;}};try{Object.defineProperty(shim,"length",{get:function(){return Object.keys(mem).length;}});}catch(e){}try{Object.defineProperty(window,"localStorage",{configurable:true,value:shim});}catch(e){try{window.localStorage=shim;}catch(e2){}}}})();</script>
 <script>try{var _r=document.documentElement,_t=localStorage.getItem("yj_theme");_r.dataset.theme=_t||((window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light");_r.dataset.font=localStorage.getItem("yj_font")||"serif";_r.dataset.size=localStorage.getItem("yj_size")||"m";}catch(e){}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="lingdeng-180.png">
@@ -237,6 +240,38 @@ details>div{overflow-x:auto}
   .result-head{flex-direction:row}
   h1{font-size:1.3em}
 }
+/* ---- 告解室 ---- */
+.confess-room{position:relative;border-radius:18px;overflow:hidden;min-height:540px;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;padding:30px 18px;box-shadow:var(--shadow);margin:6px 0}
+.confess-room.yi{background-image:url(confess-yi.jpg?v=2)}
+.confess-room.tarot{background-image:url(confess-tarot.jpg?v=2)}
+[data-theme="dark"] .confess-room.yi{background-image:url(confess-yi-night.jpg?v=2),url(confess-yi.jpg?v=2)}
+[data-theme="dark"] .confess-room.tarot{background-image:url(confess-tarot-night.jpg?v=2),url(confess-tarot.jpg?v=2)}
+.confess-veil{position:absolute;inset:0;background:rgba(255,255,255,.10);z-index:1}
+[data-theme="dark"] .confess-veil{background:linear-gradient(rgba(8,12,38,.42),rgba(6,9,30,.55))}
+.confess-panel{position:relative;z-index:2;width:100%;max-width:440px;background:rgba(255,255,255,.28);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border:1px solid rgba(255,255,255,.45);border-radius:16px;padding:24px 22px;box-shadow:0 8px 32px rgba(70,58,100,.16)}
+[data-theme="dark"] .confess-panel{background:rgba(14,18,48,.26);border-color:rgba(150,170,235,.26)}
+.confess-panel h2{text-align:center;letter-spacing:.18em;margin:0 0 6px;text-shadow:0 1px 10px rgba(255,255,255,.5)}
+[data-theme="dark"] .confess-panel h2{text-shadow:0 1px 12px rgba(0,0,8,.6)}
+.confess-intro{text-align:center;color:var(--ink);opacity:.82;font-size:.9em;line-height:1.9;margin:0 0 16px}
+.confess-input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.30);color:var(--ink);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:1em;line-height:2;resize:vertical;min-height:120px;transition:opacity .8s,filter .8s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+[data-theme="dark"] .confess-input{background:rgba(10,14,40,.26);border-color:rgba(150,170,235,.26)}
+.confess-input::placeholder{color:var(--ink2);opacity:.85}
+.confess-panel .confess-intro,.confess-panel .confess-input{text-shadow:0 1px 6px rgba(255,255,255,.4)}
+[data-theme="dark"] .confess-panel .confess-intro,[data-theme="dark"] .confess-panel .confess-input{text-shadow:0 1px 8px rgba(0,0,8,.55)}
+.confess-input:focus{outline:none;border-color:var(--accent)}
+.confess-input.dissolving{opacity:0;filter:blur(5px)}
+.confess-input.shake{animation:cshake .4s}
+@keyframes cshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.confess-actions{display:flex;justify-content:center;margin-top:16px}
+.confess-release{border:none;background:var(--accent);color:#fff;border-radius:24px;padding:11px 38px;font-family:inherit;font-size:1.02em;letter-spacing:.22em;cursor:pointer;box-shadow:0 4px 16px rgba(120,105,160,.3);transition:.25s}
+.confess-release:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.confess-after{max-height:0;overflow:hidden;opacity:0;transition:max-height .6s,opacity .6s}
+.confess-after.show{max-height:240px;opacity:1;margin-top:18px}
+.confess-reply{color:var(--ink);font-size:1.04em;line-height:2;text-align:center;margin:0}
+.confess-after-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.mote{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,228,176,.7) 60%,transparent);box-shadow:0 0 9px rgba(255,224,176,.9);pointer-events:none;animation:moteRise 2.4s ease-out forwards;z-index:5}
+[data-theme="dark"] .mote{background:radial-gradient(circle,#fff,rgba(184,202,255,.8) 60%,transparent);box-shadow:0 0 11px rgba(172,192,255,.95)}
+@keyframes moteRise{0%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:1}100%{opacity:0;transform:translateY(-130px) scale(1.15)}}
 </style>
 </head>
 <body>
@@ -256,6 +291,7 @@ details>div{overflow-x:auto}
 <div id="yiRoot">
 <nav>
   <button data-p="divine" class="on">起卦</button>
+  <button data-p="confess">告解室</button>
   <button data-p="lib">圖鑑</button>
   <button data-p="recs">紀錄</button>
   <button data-p="learn">學習</button>
@@ -445,12 +481,26 @@ details>div{overflow-x:auto}
   </div>
 </section>
 
+<section class="page" id="p-confess">
+  <div class="confess-room yi">
+    <div class="confess-veil"></div>
+    <div class="confess-panel">
+      <h2>告解室</h2>
+      <p class="confess-intro">把心上的重量寫下來。寫完，輕輕放下——這些字不會被留存，如同說給星空與雲海聽。</p>
+      <textarea id="confessYi" class="confess-input" rows="5" placeholder="此刻，什麼在你心上？"></textarea>
+      <div class="confess-actions"><button class="confess-release" data-room="yi">放　下</button></div>
+      <div class="confess-after" id="confessYiAfter"></div>
+    </div>
+  </div>
+</section>
+
 <footer><span>原文採《周易》通行本</span>・<span>解讀為本站白話撰寫</span>・<span>僅供修身參考</span></footer>
 </div><!-- /yiRoot -->
 
 <div id="taroRoot">
 <nav>
   <button data-tp="draw" class="on">抽牌</button>
+  <button data-tp="confess">告解室</button>
   <button data-tp="combo">合璧</button>
   <button data-tp="deck">牌庫</button>
   <button data-tp="trecs">紀錄</button>
@@ -607,6 +657,19 @@ details>div{overflow-x:auto}
     <details><summary>抽牌的心態</summary><div>
       與易經占卜相同：心誠則明，一問一事；不問他人隱私，不重複追問同一件事；牌義永遠服務於你的思考，而非代替你決定。抽到「壞牌」不必驚慌——死神是蛻變，高塔是除舊，寶劍十是谷底回升。每張牌都有禮物。
     </div></details>
+  </div>
+</section>
+
+<section class="page" id="tp-confess">
+  <div class="confess-room tarot">
+    <div class="confess-veil"></div>
+    <div class="confess-panel">
+      <h2>告解室</h2>
+      <p class="confess-intro">把心上的重量寫下來。寫完，輕輕放下——這些字不會被留存，如同交託給燭光與月色。</p>
+      <textarea id="confessTarot" class="confess-input" rows="5" placeholder="此刻，什麼在你心上？"></textarea>
+      <div class="confess-actions"><button class="confess-release" data-room="tarot">放　下</button></div>
+      <div class="confess-after" id="confessTarotAfter"></div>
+    </div>
   </div>
 </section>
 
@@ -924,7 +987,7 @@ function topicHtml(D){
   if(!D||!D.tp)return"";
   const t=D.tp,row=(k,v)=>`<div class="tprow"><div class="tpk">${k}</div><div class="tpv">${v}</div></div>`;
   return `<div class="card"><h2>分項提點</h2>
-  ${row("健康",t.he)}${row("事業",t.ca)}${row("子女",t.ch)}
+  ${row("整體",t.ov)}${row("愛情",t.lo)}${row("事業",t.ca)}${row("健康",t.he)}${row("子女",t.ch)}${row("成長",t.gr)}
   <p class="tpnote">分項提點依本卦卦義而發，供自我覺察與生活參考；非醫療診斷、法律或投資建議，身體不適請諮詢專業。</p></div>`;
 }
 function keyOracleHtml(r,rule){
@@ -1072,9 +1135,12 @@ function openHexDetail(id){
   <h3 style="margin:12px 0 4px">適合的行動</h3><div class="modern blist">${D.ac.map(a=>`<div>・${a}</div>`).join("")}</div>
   <div class="scard"><div class="scl">${D.bl}</div><div class="scn">一句祝福</div></div>`;
   if(D&&D.tp)html+=`<h3 style="margin:14px 0 6px">分項提點</h3>
-  <div class="tprow"><div class="tpk">健康</div><div class="tpv">${D.tp.he}</div></div>
+  <div class="tprow"><div class="tpk">整體</div><div class="tpv">${D.tp.ov}</div></div>
+  <div class="tprow"><div class="tpk">愛情</div><div class="tpv">${D.tp.lo}</div></div>
   <div class="tprow"><div class="tpk">事業</div><div class="tpv">${D.tp.ca}</div></div>
+  <div class="tprow"><div class="tpk">健康</div><div class="tpv">${D.tp.he}</div></div>
   <div class="tprow"><div class="tpk">子女</div><div class="tpv">${D.tp.ch}</div></div>
+  <div class="tprow"><div class="tpk">成長</div><div class="tpv">${D.tp.gr}</div></div>
   <p class="tpnote">分項提點依本卦卦義而發，供自我覺察與生活參考；非醫療診斷、法律或投資建議，身體不適請諮詢專業。</p>`;
   html+=`
   <h3 style="margin:14px 0 4px">卦辭</h3><p class="orig">${h.gua}</p><p class="modern">${h.guaB}</p>
@@ -1181,6 +1247,58 @@ document.querySelectorAll("#taroRoot nav button").forEach(b=>b.onclick=()=>{
   document.querySelectorAll("#taroRoot .page").forEach(p=>p.classList.toggle("on",p.id==="tp-"+b.dataset.tp));
   if(b.dataset.tp==="trecs"){renderTRecs();renderTStats();}
   if(b.dataset.tp==="combo")renderCRecs();
+});
+
+/* ---- 告解室：寫下煩惱再釋放（文字不留存） ---- */
+const CONFESS_REPLY=[
+  "你願意把它說出口，就已經卸下了一部分重量。",
+  "心裡的話被聽見了。深呼吸，讓它隨星光散去。",
+  "放下不是遺忘，是把手騰出來，迎接接下來的事。",
+  "此刻你已經很勇敢了。剩下的，慢慢來，不必急。",
+  "風會把它帶走。你只要記得，你並不孤單。",
+  "把重的留在這裡，輕的帶走。你值得喘一口氣。"
+];
+function confessRelease(room){
+  const ta=document.getElementById(room==="yi"?"confessYi":"confessTarot");
+  const after=document.getElementById(room==="yi"?"confessYiAfter":"confessTarotAfter");
+  if(!ta)return;
+  if(!(ta.value||"").trim()){ta.classList.add("shake");ta.focus();setTimeout(()=>ta.classList.remove("shake"),420);return;}
+  const panel=ta.closest(".confess-panel");
+  for(let i=0;i<16;i++){
+    const m=document.createElement("span");m.className="mote";
+    m.style.left=(8+Math.random()*84)+"%";
+    m.style.top=(38+Math.random()*34)+"%";
+    m.style.animationDelay=(Math.random()*0.55).toFixed(2)+"s";
+    panel.appendChild(m);
+    setTimeout(()=>m.remove(),3000);
+  }
+  ta.classList.add("dissolving");
+  setTimeout(()=>{
+    ta.value="";ta.classList.remove("dissolving");
+    const msg=CONFESS_REPLY[Math.floor(Math.random()*CONFESS_REPLY.length)];
+    after.innerHTML=`<p class="confess-reply">${msg}</p>
+      <div class="confess-after-btns">
+        <button class="ghost confess-goto" data-room="${room}" style="margin-top:0">${room==="yi"?"靜心起卦":"靜心抽牌"}</button>
+        <button class="ghost confess-again" data-room="${room}" style="margin-top:0">再寫一次</button>
+      </div>`;
+    after.classList.add("show");
+  },860);
+}
+document.addEventListener("click",e=>{
+  const rel=e.target.closest(".confess-release");
+  if(rel){confessRelease(rel.dataset.room);return;}
+  const go=e.target.closest(".confess-goto");
+  if(go){
+    if(go.dataset.room==="yi")document.querySelector('#yiRoot nav button[data-p="divine"]').click();
+    else document.querySelector('#taroRoot nav button[data-tp="draw"]').click();
+    window.scrollTo({top:0,behavior:"smooth"});return;
+  }
+  const ag=e.target.closest(".confess-again");
+  if(ag){
+    const af=document.getElementById(ag.dataset.room==="yi"?"confessYiAfter":"confessTarotAfter");
+    af.classList.remove("show");af.innerHTML="";
+    const t=document.getElementById(ag.dataset.room==="yi"?"confessYi":"confessTarot");if(t)t.focus();
+  }
 });
 
 /* ---- 中西合璧 ---- */
