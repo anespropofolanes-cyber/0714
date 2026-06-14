@@ -242,10 +242,10 @@ details>div{overflow-x:auto}
 }
 /* ---- 告解室 ---- */
 .confess-room{position:relative;border-radius:18px;overflow:hidden;min-height:540px;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;padding:30px 18px;box-shadow:var(--shadow);margin:6px 0}
-.confess-room.yi{background-image:url(confess-yi.jpg?v=2)}
-.confess-room.tarot{background-image:url(confess-tarot.jpg?v=2)}
-[data-theme="dark"] .confess-room.yi{background-image:url(confess-yi-night.jpg?v=2),url(confess-yi.jpg?v=2)}
-[data-theme="dark"] .confess-room.tarot{background-image:url(confess-tarot-night.jpg?v=2),url(confess-tarot.jpg?v=2)}
+.confess-room.yi{background-image:url(confess-yi.jpg?v=3)}
+.confess-room.tarot{background-image:url(confess-tarot.jpg?v=3)}
+[data-theme="dark"] .confess-room.yi{background-image:url(confess-yi-night.jpg?v=3),url(confess-yi.jpg?v=3)}
+[data-theme="dark"] .confess-room.tarot{background-image:url(confess-tarot-night.jpg?v=3),url(confess-tarot.jpg?v=3)}
 .confess-veil{position:absolute;inset:0;background:rgba(255,255,255,.10);z-index:1}
 [data-theme="dark"] .confess-veil{background:linear-gradient(rgba(8,12,38,.42),rgba(6,9,30,.55))}
 .confess-panel{position:relative;z-index:2;width:100%;max-width:440px;background:rgba(255,255,255,.07);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid rgba(255,255,255,.6);border-radius:16px;padding:24px 22px;box-shadow:0 8px 32px rgba(70,58,100,.12),inset 0 1px 0 rgba(255,255,255,.35)}
@@ -254,7 +254,7 @@ details>div{overflow-x:auto}
 [data-theme="dark"] .confess-panel h2{text-shadow:0 1px 12px rgba(0,0,8,.6)}
 .confess-intro{text-align:center;color:var(--ink);opacity:.85;font-size:.9em;line-height:2.05;margin:0 0 18px}
 .confess-intro,.confess-reply{text-wrap:pretty;line-break:strict;word-break:normal;overflow-wrap:normal}
-.confess-panel .nb{display:inline-block;white-space:nowrap}
+.confess-panel .nb{display:block;white-space:nowrap}
 .confess-input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.20);color:var(--ink);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:1em;line-height:2;resize:vertical;min-height:120px;transition:opacity .8s,filter .8s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 [data-theme="dark"] .confess-input{background:rgba(10,14,40,.22);border-color:rgba(150,170,235,.26)}
 .confess-input::placeholder{color:var(--ink2);opacity:.85}
@@ -267,13 +267,41 @@ details>div{overflow-x:auto}
 .confess-actions{display:flex;justify-content:center;margin-top:16px}
 .confess-release{border:none;background:var(--accent);color:#fff;border-radius:24px;padding:11px 38px;font-family:inherit;font-size:1.02em;letter-spacing:.22em;cursor:pointer;box-shadow:0 4px 16px rgba(120,105,160,.3);transition:.25s}
 .confess-release:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.confess-after{max-height:0;overflow:hidden;opacity:0;transition:max-height .6s,opacity .6s}
-.confess-after.show{max-height:240px;opacity:1;margin-top:18px}
+.confess-after{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity .9s ease}
+.confess-after.show{opacity:1;pointer-events:auto}
 .confess-reply{color:var(--ink);font-size:1.04em;line-height:2;text-align:center;margin:0}
 .confess-after-btns{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
-.mote{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,228,176,.7) 60%,transparent);box-shadow:0 0 9px rgba(255,224,176,.9);pointer-events:none;animation:moteRise 2.4s ease-out forwards;z-index:5}
-[data-theme="dark"] .mote{background:radial-gradient(circle,#fff,rgba(184,202,255,.8) 60%,transparent);box-shadow:0 0 11px rgba(172,192,255,.95)}
-@keyframes moteRise{0%{opacity:0;transform:translateY(0) scale(.5)}18%{opacity:1}100%{opacity:0;transform:translateY(-130px) scale(1.15)}}
+.mote{position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.92),rgba(255,233,192,.42) 40%,transparent 72%);box-shadow:0 0 5px rgba(255,228,185,.55);filter:blur(.5px);pointer-events:none;animation:moteRise 3.2s ease-out forwards;z-index:5}
+[data-theme="dark"] .mote{background:radial-gradient(circle,rgba(255,255,255,.92),rgba(188,206,255,.48) 40%,transparent 72%);box-shadow:0 0 6px rgba(178,200,255,.6)}
+@keyframes moteRise{0%{opacity:0;transform:translateY(4px) scale(.3)}28%{opacity:.8;transform:translateY(-22px) scale(1)}100%{opacity:0;transform:translateY(-118px) scale(.5)}}
+/* 放下後：面板隱去、背景完整呈現，只留雙心＋星光＋發光小語 */
+.confess-room.released .confess-panel{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;border-color:transparent;box-shadow:none}
+.cf-write{transition:opacity .85s ease,filter .85s ease}
+.cf-write.dissolving{opacity:0;filter:blur(5px);pointer-events:none}
+.confess-room.released .cf-write{visibility:hidden;pointer-events:none}
+/* 一對心 */
+.cf-bloom{position:relative;width:128px;height:88px;margin:0 auto 20px;animation:bloomIn 2.4s ease-out both}
+.confess-hearts{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.cf-heart{fill:var(--accent);filter:drop-shadow(0 0 7px rgba(185,140,225,.9))}
+[data-theme="dark"] .cf-heart{filter:drop-shadow(0 0 11px rgba(150,180,255,.95))}
+.cf-heart.left{width:52px;height:52px;margin-right:-13px;z-index:1;transform-origin:bottom center;animation:beatL 2.7s ease-in-out infinite}
+.cf-heart.right{width:34px;height:34px;margin-left:-13px;z-index:2;transform-origin:bottom center;fill:rgba(255,255,255,.82);stroke:var(--accent);stroke-width:1.2;paint-order:stroke;animation:beatR 2.7s ease-in-out infinite .45s}
+[data-theme="dark"] .cf-heart.right{fill:rgba(222,232,255,.6);stroke:rgba(195,214,255,.95)}
+@keyframes beatL{0%,100%{transform:translateY(-8px) rotate(6deg) scale(1)}50%{transform:translateY(-8px) rotate(6deg) scale(1.06)}}
+@keyframes beatR{0%,100%{transform:translateY(11px) rotate(-13deg) scale(1)}50%{transform:translateY(11px) rotate(-13deg) scale(1.12)}}
+@keyframes bloomIn{0%{opacity:0;transform:translateY(28px) scale(.82)}55%{opacity:.7}100%{opacity:1;transform:translateY(0) scale(1)}}
+/* 星光 */
+.spark{position:absolute;width:12px;height:12px;background:radial-gradient(circle,#fff 12%,rgba(255,240,205,.75) 46%,transparent 70%);clip-path:polygon(50% 0,59% 41%,100% 50%,59% 59%,50% 100%,41% 59%,0 50%,41% 41%);filter:drop-shadow(0 0 4px rgba(255,235,190,.95));opacity:0;animation:twinkle 2.6s ease-in-out infinite}
+[data-theme="dark"] .spark{background:radial-gradient(circle,#fff 12%,rgba(190,210,255,.8) 46%,transparent 70%);filter:drop-shadow(0 0 5px rgba(185,205,255,.95))}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.35) rotate(0)}50%{opacity:1;transform:scale(1) rotate(45deg)}}
+/* 發光小語・緩緩顯現 */
+.confess-room.released .confess-reply{font-size:1.16em;line-height:2.15;animation:replyIn 2.4s ease .6s both;text-shadow:0 1px 3px rgba(40,30,60,.4),0 0 18px rgba(255,246,212,.6)}
+[data-theme="dark"] .confess-room.released .confess-reply{text-shadow:0 1px 4px rgba(0,0,6,.8),0 0 22px rgba(155,185,255,.65)}
+@keyframes replyIn{0%{opacity:0;transform:translateY(10px);filter:blur(5px)}55%{filter:blur(0)}100%{opacity:1;transform:translateY(0);filter:blur(0)}}
+.confess-room.released .confess-after-btns{animation:btnIn 1.1s ease 2.6s both}
+@keyframes btnIn{0%{opacity:0}100%{opacity:1}}
+.confess-room.released .confess-after-btns .ghost{background:rgba(255,255,255,.20);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+[data-theme="dark"] .confess-room.released .confess-after-btns .ghost{background:rgba(12,16,44,.30)}
 </style>
 </head>
 <body>
@@ -487,10 +515,12 @@ details>div{overflow-x:auto}
   <div class="confess-room yi">
     <div class="confess-veil"></div>
     <div class="confess-panel">
-      <h2>告解室</h2>
-      <p class="confess-intro"><span class="nb">把心上的重量寫下來。</span><span class="nb">寫完，輕輕放下——</span><span class="nb">這些字不會被留存，</span><span class="nb">如同說給星空與雲海聽。</span></p>
-      <textarea id="confessYi" class="confess-input" rows="5" placeholder="此刻，什麼在你心上？"></textarea>
-      <div class="confess-actions"><button class="confess-release" data-room="yi">放　下</button></div>
+      <div class="cf-write">
+        <h2>告解室</h2>
+        <p class="confess-intro"><span class="nb">把心上的重量寫下來。</span><span class="nb">寫完，輕輕放下——</span><span class="nb">這些字不會被留存，</span><span class="nb">如同說給星空與雲海聽。</span></p>
+        <textarea id="confessYi" class="confess-input" rows="5" placeholder="此刻，什麼在你心上？"></textarea>
+        <div class="confess-actions"><button class="confess-release" data-room="yi">放　下</button></div>
+      </div>
       <div class="confess-after" id="confessYiAfter"></div>
     </div>
   </div>
@@ -666,10 +696,12 @@ details>div{overflow-x:auto}
   <div class="confess-room tarot">
     <div class="confess-veil"></div>
     <div class="confess-panel">
-      <h2>告解室</h2>
-      <p class="confess-intro"><span class="nb">把心上的重量寫下來。</span><span class="nb">寫完，輕輕放下——</span><span class="nb">這些字不會被留存，</span><span class="nb">如同交託給燭光與月色。</span></p>
-      <textarea id="confessTarot" class="confess-input" rows="5" placeholder="此刻，什麼在你心上？"></textarea>
-      <div class="confess-actions"><button class="confess-release" data-room="tarot">放　下</button></div>
+      <div class="cf-write">
+        <h2>告解室</h2>
+        <p class="confess-intro"><span class="nb">把心上的重量寫下來。</span><span class="nb">寫完，輕輕放下——</span><span class="nb">這些字不會被留存，</span><span class="nb">如同交託給燭光與月色。</span></p>
+        <textarea id="confessTarot" class="confess-input" rows="5" placeholder="此刻，什麼在你心上？"></textarea>
+        <div class="confess-actions"><button class="confess-release" data-room="tarot">放　下</button></div>
+      </div>
       <div class="confess-after" id="confessTarotAfter"></div>
     </div>
   </div>
@@ -1267,26 +1299,36 @@ function confessRelease(room){
   const after=document.getElementById(room==="yi"?"confessYiAfter":"confessTarotAfter");
   if(!ta)return;
   if(!(ta.value||"").trim()){ta.classList.add("shake");ta.focus();setTimeout(()=>ta.classList.remove("shake"),420);return;}
-  const panel=ta.closest(".confess-panel");
-  for(let i=0;i<16;i++){
+  const panel=ta.closest(".confess-panel"),roomEl=ta.closest(".confess-room"),cw=ta.closest(".cf-write");
+  for(let i=0;i<13;i++){
     const m=document.createElement("span");m.className="mote";
-    m.style.left=(8+Math.random()*84)+"%";
-    m.style.top=(38+Math.random()*34)+"%";
-    m.style.animationDelay=(Math.random()*0.55).toFixed(2)+"s";
+    const sz=(3+Math.random()*2.5).toFixed(1);
+    m.style.width=m.style.height=sz+"px";
+    m.style.left=(6+Math.random()*88)+"%";
+    m.style.top=(30+Math.random()*48)+"%";
+    m.style.animationDelay=(Math.random()*1.3).toFixed(2)+"s";
     panel.appendChild(m);
-    setTimeout(()=>m.remove(),3000);
+    setTimeout(()=>m.remove(),4200);
   }
   ta.classList.add("dissolving");
+  if(cw)cw.classList.add("dissolving");
   setTimeout(()=>{
     ta.value="";ta.classList.remove("dissolving");
+    if(roomEl)roomEl.classList.add("released");
     const msg=CONFESS_REPLY[Math.floor(Math.random()*CONFESS_REPLY.length)];
-    after.innerHTML=`<p class="confess-reply">${phr(msg)}</p>
+    const heart='<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>';
+    const sparks=[[4,18,0],[88,8,.5],[82,66,1],[-6,60,1.5],[44,-12,.8],[22,80,.3]].map(p=>`<span class="spark" style="left:${p[0]}%;top:${p[1]}%;animation-delay:${p[2]}s"></span>`).join("");
+    after.innerHTML=`<div class="cf-bloom">${sparks}<div class="confess-hearts">
+        <svg class="cf-heart left" viewBox="0 0 24 24" aria-hidden="true">${heart}</svg>
+        <svg class="cf-heart right" viewBox="0 0 24 24" aria-hidden="true">${heart}</svg>
+      </div></div>
+      <p class="confess-reply">${phr(msg)}</p>
       <div class="confess-after-btns">
         <button class="ghost confess-goto" data-room="${room}" style="margin-top:0">${room==="yi"?"靜心起卦":"靜心抽牌"}</button>
         <button class="ghost confess-again" data-room="${room}" style="margin-top:0">再寫一次</button>
       </div>`;
     after.classList.add("show");
-  },860);
+  },900);
 }
 document.addEventListener("click",e=>{
   const rel=e.target.closest(".confess-release");
@@ -1299,6 +1341,7 @@ document.addEventListener("click",e=>{
   }
   const ag=e.target.closest(".confess-again");
   if(ag){
+    const rEl=ag.closest(".confess-room");if(rEl){rEl.classList.remove("released");const cw=rEl.querySelector(".cf-write");if(cw)cw.classList.remove("dissolving");}
     const af=document.getElementById(ag.dataset.room==="yi"?"confessYiAfter":"confessTarotAfter");
     af.classList.remove("show");af.innerHTML="";
     const t=document.getElementById(ag.dataset.room==="yi"?"confessYi":"confessTarot");if(t)t.focus();
