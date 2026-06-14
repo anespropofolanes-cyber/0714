@@ -1362,7 +1362,7 @@ function tMeanHtml(c,rev,posLabel,focus){
   if(e){
     let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
     if(e.uh)lines.push(["health","健康",rev?e.rh:e.uh]);
-    if(!rev)lines.push(["money","財務",e.um]);
+    lines.push(["money","財務",rev?(e.rm||e.um):e.um]);
     if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
     ctx=`<div style="border-top:1px dashed var(--line);padding-top:8px;margin-top:8px">${facetRows(lines,focus)}</div>`;
   }
@@ -1389,8 +1389,8 @@ function tReadingHtml(cid,rev,posLabel,focus){
   if(e){
     let lines=[["love","感情",rev?e.rl:e.ul],["work","事業",rev?e.rw:e.uw]];
     if(e.uh)lines.push(["health","健康",rev?e.rh:e.uh]);
-    if(!rev)lines.push(["money","財務",e.um]);
-    lines.push(["grow","成長",d.gr]);
+    lines.push(["money","財務",rev?(e.rm||e.um):e.um]);
+    lines.push(["grow","成長",rev?(d.rg||d.gr):d.gr]);
     if(focus&&focus!=="all")lines.sort((a,b)=>(b[0]===focus)-(a[0]===focus));
     facets=facetRows(lines,focus);
   }
@@ -1399,10 +1399,10 @@ function tReadingHtml(cid,rev,posLabel,focus){
   <div class="tk">${t.kw.map(k=>`<span class="kw">${k}</span>`).join("")}</div>
   <div class="dsec"><b>一・這張牌的主題</b><p class="modern" style="margin-top:2px">${d.th}。${rev?t.rev:t.up}</p></div>
   <div class="dsec"><b>二・你現在可能的狀態</b><p class="modern" style="margin-top:2px">${rev?d.rs:d.st}</p></div>
-  <div class="dsec"><b>三・牌面提醒</b><p class="modern" style="margin-top:2px">${d.re}</p></div>
-  <div class="dsec"><b>四・具體建議</b><div class="modern blist" style="margin-top:2px">${d.ac.map(a=>`<div>・${a}</div>`).join("")}</div></div>
+  <div class="dsec"><b>三・牌面提醒</b><p class="modern" style="margin-top:2px">${rev?(d.rre||d.re):d.re}</p></div>
+  <div class="dsec"><b>四・具體建議</b><div class="modern blist" style="margin-top:2px">${(rev?(d.rac||d.ac):d.ac).map(a=>`<div>・${a}</div>`).join("")}</div></div>
   ${facets?`<details style="margin:8px 0"><summary style="padding:8px 12px;font-size:.88em">五個面向：感情・事業・健康・財務・成長</summary><div>${facets}<p class="tpnote">健康面向供自我覺察參考，非醫療診斷，身體不適請諮詢專業。</p></div></details>`:""}
-  <div class="scard" style="margin:10px 0 4px"><div class="scl">${d.bl}</div><div class="scn">五・一句祝福　${t.g}</div></div>
+  <div class="scard" style="margin:10px 0 4px"><div class="scl">${rev?(d.rbl||d.bl):d.bl}</div><div class="scn">五・一句祝福　${t.g}</div></div>
   </div>`;
 }
 function showTResult(){
@@ -1519,7 +1519,7 @@ function openTCard(id){
   <div class="tmean" style="margin-top:6px"><div class="tt" style="font-size:.92em;margin-bottom:6px">正位</div>
   ${facetRows([["","感情",e.ul],["","工作",e.uw],["","健康",e.uh],["","金錢",e.um],["","成長",d.gr]])}</div>
   <div class="tmean"><div class="tt" style="font-size:.92em;margin-bottom:6px">逆位</div>
-  ${facetRows([["","感情",e.rl],["","工作",e.rw],["","健康",e.rh]])}</div>
+  ${facetRows([["","感情",e.rl],["","工作",e.rw],["","健康",e.rh],["","金錢",e.rm||e.um],["","成長",d.rg||d.gr]])}</div>
   <p class="tpnote">健康面向供自我覺察參考，非醫療診斷，身體不適請諮詢專業。</p>`;
   if(d)h+=`<h3 style="margin:12px 0 4px">這張牌想提醒你的事</h3><p class="modern">${d.re}</p>
   <h3 style="margin:12px 0 4px">適合的行動建議</h3><div class="modern blist">${d.ac.map(a=>`<div>・${a}</div>`).join("")}</div>`;
